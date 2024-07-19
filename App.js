@@ -10,6 +10,7 @@ import CowsScreen from './screens/CowsScreen';
 import FinanceScreen from './screens/FinanceScreen';
 import WarehouseScreen from './screens/WarehouseScreen';
 import ManageCow from './components/ManageCow';
+import HomeScreen from './screens/HomeScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -27,6 +28,15 @@ function DrawerNavigator() {
       drawerActiveBackgroundColor: '#aaa'
     }}
   >
+    <Drawer.Screen
+      name='Əsas səhifə'
+      component={HomeScreen}
+      options={{
+        title: 'Əsas səhifə',
+        drawerIcon: ({ color, size }) => <MaterialCommunityIcons name='home' size={size} color={color} />
+      }}
+    />
+
     <Drawer.Screen
       name='İnəklər'
       component={CowsScreen}
@@ -83,6 +93,10 @@ export default function App() {
             }}
           />
           <Stack.Screen
+            name='Əsas səhifə'
+            component={HomeScreen}
+          />
+          <Stack.Screen
             name='İnəklər'
             component={CowsScreen}
           />
@@ -98,7 +112,7 @@ export default function App() {
             name='Anbar'
             component={WarehouseScreen}
           />
-          <Stack.Screen 
+          <Stack.Screen
             name='Redaktə'
             component={ManageCow}
           />
