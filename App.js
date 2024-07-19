@@ -9,6 +9,7 @@ import MilkScreen from './screens/MilkScreen';
 import CowsScreen from './screens/CowsScreen';
 import FinanceScreen from './screens/FinanceScreen';
 import WarehouseScreen from './screens/WarehouseScreen';
+import ManageCow from './components/ManageCow';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -71,7 +72,7 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator screenOptions={{
           headerStyle: { backgroundColor: '#eee' },
-          headerTintColor: '#fff',
+          headerTintColor: '#333',
           contentStyle: { backgroundColor: '#eee' }
         }}>
           <Stack.Screen
@@ -96,6 +97,10 @@ export default function App() {
           <Stack.Screen
             name='Anbar'
             component={WarehouseScreen}
+          />
+          <Stack.Screen 
+            name='Redaktə'
+            component={ManageCow}
           />
         </Stack.Navigator>
       </NavigationContainer>
