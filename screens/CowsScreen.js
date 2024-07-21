@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View, Platform } from "react-native";
-import { Ionicons } from '@expo/vector-icons';
 
 import { GlobalStyles } from "../constants/styles";
 import FlatListItem from "../components/UI/FlatListItem";
 import { useNavigation } from "@react-navigation/native";
+import FixedButton from "../components/UI/FixedButton";
 
 const cows = [
     { id: '1', name: 'Bessie', categories: ['inək', 'xəstə'], age: 4, health: 'Healthy' },
@@ -75,18 +75,13 @@ function CowsScreen() {
                         />
                     )}
                     keyExtractor={(item) => item.id}
-                    showsVerticalScrollIndicator={false} 
+                    showsVerticalScrollIndicator={false}
                 />
             </View>
-
-            <Pressable
-                style={styles.addButton}
+            <FixedButton
                 onPress={addCow}
-            >
-                <Text>
-                    <Ionicons name="add-circle-outline" size={24} color={GlobalStyles.colors.primary700} />
-                </Text>
-            </Pressable>
+                name='add'
+            />
         </View>
     )
 }
@@ -95,11 +90,11 @@ export default CowsScreen;
 
 const styles = StyleSheet.create({
     container: {
-        flex:1,
+        flex: 1,
         marginHorizontal: 15,
     },
-    flatContainer:{
-        flex:1,
+    flatContainer: {
+        flex: 1,
         marginBottom: 10,
     },
     categoriesContainer: {
@@ -125,21 +120,5 @@ const styles = StyleSheet.create({
         opacity: .5,
         backgroundColor: GlobalStyles.colors.primary700,
         overflow: 'hidden',
-    },
-    addButton: {
-        position: 'absolute',
-        bottom: 20,
-        right: 10,
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        backgroundColor: GlobalStyles.colors.primary100,
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
     }
 });

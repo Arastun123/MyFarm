@@ -10,63 +10,65 @@ import { GlobalStyles } from "../constants/styles";
 import Dropdown from "./UI/Dropdown";
 
 
-function ManageCow({ route, defaultValues }) {
+function ManageCow({ route }) {
+    const { id, defaultValue, title } = route.params;
+
+    console.log(defaultValue);
     const [inputs, setInputs] = useState({
         number: {
-            value: defaultValues ? defaultValues.number.toString() : '',
+            value: defaultValue ? defaultValue.number.toString() : '',
             isValid: true
         },
         name: {
-            value: defaultValues ? defaultValues.name : '',
+            value: defaultValue ? defaultValue.name : '',
             isValid: true
         },
         weight: {
-            value: defaultValues ? defaultValues.weight.toString() : '',
+            value: defaultValue ? defaultValue.weight.toString() : '',
             isValid: true
         },
         date: {
-            value: defaultValues ? getFormatedDate(defaultValues.date) : '',
+            value: defaultValue ? defaultValue.date : '',
             isValid: true
         },
-
         enteredDate: {
-            value: defaultValues ? getFormatedDate(defaultValues.enteredDate) : '',
+            value: defaultValue ? defaultValue.enteredDate : '',
             isValid: true
         },
         milk: {
-            value: defaultValues ? defaultValues.milk.toString() : '',
+            value: defaultValue ? defaultValue.milk.toString() : '',
             isValid: true
         },
         vaccine: {
-            value: defaultValues ? defaultValues.vaccine : '',
+            value: defaultValue ? defaultValue.vaccine : '',
             isValid: true
         },
         illnes: {
-            value: defaultValues ? defaultValues.illnes : '',
+            value: defaultValue ? defaultValue.illnes : '',
             isValid: true
         },
         info: {
-            value: defaultValues ? defaultValues.info : '',
+            value: defaultValue ? defaultValue.info : '',
             isValid: true
         },
         motherBilka: {
-            value: defaultValues ? defaultValues.motherBilka : '',
+            value: defaultValue ? defaultValue.motherBilka : '',
             isValid: true
         },
         fatherBilka: {
-            value: defaultValues ? defaultValues.fatherBilka : '',
+            value: defaultValue ? defaultValue.fatherBilka : '',
             isValid: true
         },
         mayalanmatarixi: {
-            value: defaultValues ? defaultValues.mayalanmatarixi : '',
+            value: defaultValue ? defaultValue.mayalanmatarixi : '',
             isValid: true
         },
         buyDate: {
-            value: defaultValues ? defaultValues.buyDate : '',
+            value: defaultValue ? defaultValue.buyDate : '',
             isValid: true
         },
         getFrom: {
-            value: defaultValues ? defaultValues.getFrom : '',
+            value: defaultValue ? defaultValue.getFrom : '',
             isValid: true
         }
     });
@@ -75,7 +77,6 @@ function ManageCow({ route, defaultValues }) {
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
 
-    const { id, title } = route.params;
 
     function inputChangeHandler(inputIdentifier, enteredValue) {
         setInputs((curInputValues) => {
@@ -102,11 +103,11 @@ function ManageCow({ route, defaultValues }) {
         }
     };
 
-    function submitCow(){
+    function submitCow() {
         console.log(inputs);
     }
 
-    function deleteCow(id){
+    function deleteCow(id) {
         console.log(id);
     }
 
@@ -114,7 +115,6 @@ function ManageCow({ route, defaultValues }) {
         <>
             <View>
                 <Text style={styles.title}>{title}</Text>
-                <Text>{id !== '' ? id : "Insert new cow's data"}</Text>
             </View>
             <View style={styles.container}>
                 <ScrollView showsVerticalScrollIndicator={false}>
@@ -315,7 +315,6 @@ function ManageCow({ route, defaultValues }) {
                     <View style={styles.radioButtonContainer}>
                         <Button
                             text='Təsdiq et'
-                            style={styles.button}
                             color={GlobalStyles.colors.primary800}
                             onPress={submitCow}
                         />
@@ -323,7 +322,6 @@ function ManageCow({ route, defaultValues }) {
                             <>
                                 <Button
                                     text='Sil'
-                                    style={styles.button}
                                     color='red'
                                     onPress={() => deleteCow(id)}
                                 />
@@ -362,7 +360,6 @@ function ManageCow({ route, defaultValues }) {
                                 }
                                 <Button
                                     text={<FontAwesome name="exchange" size={24} color="white" />}
-                                    style={styles.button}
                                     color={showDropdown ? GlobalStyles.colors.primary800 : 'green'}
                                     onPress={() => { setShowDropdown(!showDropdown) }}
                                 />
