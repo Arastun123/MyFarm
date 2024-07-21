@@ -1,6 +1,7 @@
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { FontAwesome } from '@expo/vector-icons';
 import { useState } from "react";
+import { Dimensions } from 'react-native';
 
 import Input from "./UI/Input";
 import Button from "./UI/Button";
@@ -9,11 +10,11 @@ import { getFormatedDate } from "../util/date";
 import { GlobalStyles } from "../constants/styles";
 import Dropdown from "./UI/Dropdown";
 
+const { width, height } = Dimensions.get('window');
 
 function ManageCow({ route }) {
     const { id, defaultValue, title } = route.params;
 
-    console.log(defaultValue);
     const [inputs, setInputs] = useState({
         number: {
             value: defaultValue ? defaultValue.number.toString() : '',
@@ -103,13 +104,9 @@ function ManageCow({ route }) {
         }
     };
 
-    function submitCow() {
-        console.log(inputs);
-    }
+    function submitCow() { }
 
-    function deleteCow(id) {
-        console.log(id);
-    }
+    function deleteCow(id) { }
 
     return (
         <>
@@ -394,10 +391,9 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
     },
     dropdonwBox: {
-        width: 150,
-        // height: 400,
+        width: width * 1,
+        alignItems: 'center',
         position: 'absolute',
-        top: -169,
-        right: 121,
+        top: -149,
     }
 })

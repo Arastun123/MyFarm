@@ -103,7 +103,7 @@ const cows = [
 
 function FlatListItem({ id, name, category, age, health }) {
     const navigation = useNavigation();
-    let title = 'Edit';
+    let title = 'Redaktə';
     function showSelecetedCow(id) {
         const defaultValue = cows.find((item) => item.id === id);
         navigation.navigate('Redaktə', { id, defaultValue, title })

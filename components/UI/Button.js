@@ -13,11 +13,12 @@ export default Button;
 
 const styles = StyleSheet.create({
     button:{
-        width: 150,
-        borderRadius: 10,
+        width: 160,
+        borderRadius: 5,
         backgroundColor: GlobalStyles.colors.primary800,
-        margin: 10,
-        padding: 10,
+        margin: 5,
+        paddingVertical: 10,
+        paddingHorizontal: 10,
     },
     text:{
         color: '#fff',

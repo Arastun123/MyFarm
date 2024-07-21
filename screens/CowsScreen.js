@@ -24,13 +24,30 @@ const cows = [
     { id: '15', name: 'Lola', categories: ['xəstə'], age: 8, health: 'Sick' },
     { id: '16', name: 'Sam', categories: ['subay'], age: 4, health: 'Healthy' },
 ];
-let categories = ['buzov', 'inək', 'düyə', 'boğaz', 'erkək', 'dişi', 'sağmal', 'xəstə', 'subay', 'sıfırla']
 
 function CowsScreen() {
     const [filteredCows, setFilteredCows] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const navigation = useNavigation();
-    let title = 'Yeni məlumat';
+    let title = 'Yeni məlumat'; 
+    let categoriesCount = {};
+
+    cows.forEach(cow => {
+        cow.categories.forEach(category => {
+            if (categoriesCount[category]) {
+                categoriesCount[category]++;
+            } else {
+                categoriesCount[category] = 1;
+            }
+        });
+    });
+
+    let formattedCategories = Object.keys(categoriesCount).map(category => {
+        return { name: category, label: `${category} (${categoriesCount[category]})` };
+    });
+
+    formattedCategories.push({ name: 'sıfırla', label: 'sıfırla' });
+
 
     function showSelectedCatogory(category) {
         if (category === 'sıfırla') {
@@ -51,16 +68,18 @@ function CowsScreen() {
     return (
         <View style={styles.container}>
             <View style={styles.categoriesContainer}>
-                {categories.map((category) => (
+                {formattedCategories.map((category, index) => (
                     <Pressable
-                        key={category}
                         style={({ pressed }) => [styles.categoryText, pressed ? styles.buttonPressed : null]}
-                        onPress={() => showSelectedCatogory(category)}
+                        key={index}
+                        onPress={() => showSelectedCatogory(category.name)}
                     >
-                        <Text style={styles.text}>{category}</Text>
+                        <Text style={styles.text}>{category.label}</Text>
                     </Pressable>
                 ))}
             </View>
+
+            <Text style={styles.text}>Toplam heyvan sayı: {formattedCategories.length.toString()}</Text>
 
             <View style={styles.flatContainer}>
                 <FlatList
