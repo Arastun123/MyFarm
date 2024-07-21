@@ -20,7 +20,7 @@ function HomeScreen() {
                     ]}
                     onPress={() => changeScreen('İnəklər')}
                 >
-                    <FontAwesome6 name='cow' size={24} color={GlobalStyles.colors.primary700} />
+                    <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
                     <Text style={styles.cardTitle}>İnəklər</Text>
                 </Pressable>
                 <Pressable
@@ -30,7 +30,7 @@ function HomeScreen() {
                     ]}
                     onPress={() => changeScreen('Süd')}
                 >
-                    <MaterialCommunityIcons name='water' size={24} color={GlobalStyles.colors.primary700} />
+                    <MaterialCommunityIcons name='water' size={30} color={GlobalStyles.colors.primary700} />
                     <Text style={styles.cardTitle}>Süd</Text>
                 </Pressable>
             </View>
@@ -42,7 +42,7 @@ function HomeScreen() {
                     ]}
                     onPress={() => changeScreen('Maliyə')}
                 >
-                    <MaterialCommunityIcons name='finance' size={24} color={GlobalStyles.colors.primary700} />
+                    <MaterialCommunityIcons name='finance' size={30} color={GlobalStyles.colors.primary700} />
                     <Text style={styles.cardTitle}>Maliyə</Text>
                 </Pressable>
                 <Pressable
@@ -52,7 +52,7 @@ function HomeScreen() {
                     ]}
                     onPress={() => changeScreen('Anbar')}
                 >
-                    <FontAwesome6 name='warehouse' size={24} color={GlobalStyles.colors.primary700} />
+                    <FontAwesome6 name='warehouse' size={30} color={GlobalStyles.colors.primary700} />
                     <Text style={styles.cardTitle}>Anbar</Text>
                 </Pressable>
             </View>
@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
         width: '45%',
         height: 120,
         margin: 10,
+        padding: 10,
         borderRadius: 10,
         textAlign: 'center',
         elevation: 4,
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.4,
         flexDirection: 'column',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     cardTitle: {
         textAlign: 'center',

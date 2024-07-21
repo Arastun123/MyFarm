@@ -1,10 +1,13 @@
-import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-import Input from "./UI/Input";
-import { GlobalStyles } from "../constants/styles";
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { FontAwesome } from '@expo/vector-icons';
 import { useState } from "react";
-import { getFormatedDate } from "../util/date";
-import RadioButton from "./UI/RadioButton";
+
+import Input from "./UI/Input";
 import Button from "./UI/Button";
+import RadioButton from "./UI/RadioButton";
+import { getFormatedDate } from "../util/date";
+import { GlobalStyles } from "../constants/styles";
+import Dropdown from "./UI/Dropdown";
 
 
 function ManageCow({ route, defaultValues }) {
@@ -69,6 +72,8 @@ function ManageCow({ route, defaultValues }) {
     });
     const [selectedGender, setSelectedGender] = useState('');
     const [selectGetWay, setSelectGetWay] = useState('');
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [selectedOption, setSelectedOption] = useState(null);
 
     const { id, title } = route.params;
 
@@ -79,6 +84,30 @@ function ManageCow({ route, defaultValues }) {
                 [inputIdentifier]: { value: enteredValue, isValid: true },
             }
         })
+    };
+
+    const handleOptionSelect = (id, tableName, status) => {
+        Alert.alert(`Option Selected: ${status}`);
+        switch (status) {
+            case 'satılıb':
+                break;
+            case 'sağılır':
+                break;
+            case 'tələf olub':
+                break;
+            case 'boğaz':
+                break;
+            default:
+                break;
+        }
+    };
+
+    function submitCow(){
+        console.log(inputs);
+    }
+
+    function deleteCow(id){
+        console.log(id);
     }
 
     return (
@@ -288,6 +317,7 @@ function ManageCow({ route, defaultValues }) {
                             text='Təsdiq et'
                             style={styles.button}
                             color={GlobalStyles.colors.primary800}
+                            onPress={submitCow}
                         />
                         {id === undefined ? '' :
                             <>
@@ -295,13 +325,46 @@ function ManageCow({ route, defaultValues }) {
                                     text='Sil'
                                     style={styles.button}
                                     color='red'
-
+                                    onPress={() => deleteCow(id)}
                                 />
+                                {showDropdown ?
+                                    <View style={styles.dropdonwBox}>
+                                        <Dropdown
+                                            text='Sat'
+                                            id={id}
+                                            tableName='sold'
+                                            status='satılıb'
+                                            onSelect={handleOptionSelect}
+                                        />
+                                        <Dropdown
+                                            text='Sağmal'
+                                            id={id}
+                                            tableName='sağmal'
+                                            status='sağılır'
+                                            onSelect={handleOptionSelect}
+                                        />
+                                        <Dropdown
+                                            text='Tələf olub'
+                                            id={id}
+                                            tableName='dead'
+                                            status='tələf olub'
+                                            onSelect={handleOptionSelect}
+                                        />
+                                        <Dropdown
+                                            text='Boğaz'
+                                            id={id}
+                                            tableName='boğaz'
+                                            status='boğaz'
+                                            onSelect={handleOptionSelect}
+                                        />
+                                    </View>
+                                    : ''
+                                }
                                 <Button
-                                    text='Statusunu dəyiş'
+                                    text={<FontAwesome name="exchange" size={24} color="white" />}
                                     style={styles.button}
-                                    color='green'
-
+                                    color={showDropdown ? GlobalStyles.colors.primary800 : 'green'}
+                                    onPress={() => { setShowDropdown(!showDropdown) }}
                                 />
                             </>
                         }
@@ -333,4 +396,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexWrap: 'wrap',
     },
+    dropdonwBox: {
+        width: 150,
+        // height: 400,
+        position: 'absolute',
+        top: -169,
+        right: 121,
+    }
 })
