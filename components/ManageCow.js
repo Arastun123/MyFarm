@@ -1,50 +1,74 @@
-import { ScrollView, StyleSheet, Text, TextInput, View, Button } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import Input from "./UI/Input";
 import { GlobalStyles } from "../constants/styles";
 import { useState } from "react";
 import { getFormatedDate } from "../util/date";
+import RadioButton from "./UI/RadioButton";
+import Button from "./UI/Button";
 
 
 function ManageCow({ route, defaultValues }) {
     const [inputs, setInputs] = useState({
         number: {
             value: defaultValues ? defaultValues.number.toString() : '',
-            isValid: true 
+            isValid: true
         },
         name: {
-            value: defaultValues ? defaultValues.name :'',
-            isValid: true 
+            value: defaultValues ? defaultValues.name : '',
+            isValid: true
         },
         weight: {
             value: defaultValues ? defaultValues.weight.toString() : '',
-            isValid: true 
+            isValid: true
         },
         date: {
             value: defaultValues ? getFormatedDate(defaultValues.date) : '',
-            isValid: true 
+            isValid: true
         },
 
         enteredDate: {
             value: defaultValues ? getFormatedDate(defaultValues.enteredDate) : '',
-            isValid: true 
+            isValid: true
         },
         milk: {
-            value: defaultValues ? defaultValues.milk.toString() :'',
-            isValid: true 
+            value: defaultValues ? defaultValues.milk.toString() : '',
+            isValid: true
         },
         vaccine: {
             value: defaultValues ? defaultValues.vaccine : '',
-            isValid: true 
+            isValid: true
         },
         illnes: {
             value: defaultValues ? defaultValues.illnes : '',
-            isValid: true 
+            isValid: true
         },
         info: {
             value: defaultValues ? defaultValues.info : '',
-            isValid: true 
+            isValid: true
         },
+        motherBilka: {
+            value: defaultValues ? defaultValues.motherBilka : '',
+            isValid: true
+        },
+        fatherBilka: {
+            value: defaultValues ? defaultValues.fatherBilka : '',
+            isValid: true
+        },
+        mayalanmatarixi: {
+            value: defaultValues ? defaultValues.mayalanmatarixi : '',
+            isValid: true
+        },
+        buyDate: {
+            value: defaultValues ? defaultValues.buyDate : '',
+            isValid: true
+        },
+        getFrom: {
+            value: defaultValues ? defaultValues.getFrom : '',
+            isValid: true
+        }
     });
+    const [selectedGender, setSelectedGender] = useState('');
+    const [selectGetWay, setSelectGetWay] = useState('');
 
     const { id, title } = route.params;
 
@@ -52,7 +76,7 @@ function ManageCow({ route, defaultValues }) {
         setInputs((curInputValues) => {
             return {
                 ...curInputValues,
-                [inputIdentifier]: {value: enteredValue, isValid: true},
+                [inputIdentifier]: { value: enteredValue, isValid: true },
             }
         })
     }
@@ -90,7 +114,22 @@ function ManageCow({ route, defaultValues }) {
                             value: inputs.weight.value,
                         }}
                     />
-                    <Text>cins (radio)</Text>
+                    <View style={styles.radioButtonContainer}>
+                        <RadioButton
+                            text='Erkək'
+                            selected={selectedGender === 'Erkək'}
+                            onSelect={() => {
+                                setSelectedGender('Erkək')
+                            }}
+                        />
+                        <RadioButton
+                            text='Dişi'
+                            selected={selectedGender === 'Dişi'}
+                            onSelect={() => {
+                                setSelectedGender('Dişi')
+                            }}
+                        />
+                    </View>
                     <Input
                         label="Tarix"
                         textinputConfig={{
@@ -110,10 +149,106 @@ function ManageCow({ route, defaultValues }) {
                         }}
                     />
                     <Text>Daxil olduqu qrup</Text>
-                    <Text>Nece elde edilib</Text>
-                    <TextInput placeholder="Alinibsa alindiqi qiymet veya elave melumat" />
-                    <TextInput placeholder="Mayalanma olubsa anasının bilka nomrese" />
-                    <TextInput placeholder="Erkeyin bilka nomresi" />
+                    <View style={styles.radioButtonContainer}>
+                        <RadioButton
+                            text='Mayalanma'
+                            selected={selectGetWay === 'Mayalanma'}
+                            onSelect={() => {
+                                setSelectGetWay('Mayalanma')
+                            }}
+                        />
+                        <RadioButton
+                            text='Təbii yolla'
+                            selected={selectGetWay === 'Təbii yolla'}
+                            onSelect={() => {
+                                setSelectGetWay('Təbii yolla')
+                            }}
+                        />
+                        <RadioButton
+                            text='Alınıb'
+                            selected={selectGetWay === 'Alınıb'}
+                            onSelect={() => {
+                                setSelectGetWay('Alınıb')
+                            }}
+                        />
+                    </View>
+                    {
+                        selectGetWay === 'Təbii yolla' ?
+                            <>
+                                <Input
+                                    label='Anasının bilka nömrəsi'
+                                    textinputConfig={{
+                                        keyboardType: 'numeric',
+                                        // maxLength: 10,
+                                        onChangeText: inputChangeHandler.bind(this, 'motherBilka'),
+                                        value: inputs.motherBilka.value,
+                                    }}
+                                />
+
+                                <Input
+                                    label='Atasının bilka nömrəsi'
+                                    textinputConfig={{
+                                        keyboardType: 'numeric',
+                                        // maxLength: 10,
+                                        onChangeText: inputChangeHandler.bind(this, 'fatherBilka'),
+                                        value: inputs.fatherBilka.value,
+                                    }}
+                                />
+                            </>
+                            : <></>
+
+                    }
+
+                    {
+                        selectGetWay === 'Mayalanma' ?
+                            <>
+                                <Input
+                                    label='Mayalanma tarixi'
+                                    textinputConfig={{
+                                        placeholder: 'İl-ay-gün',
+                                        maxLength: 10,
+                                        onChangeText: inputChangeHandler.bind(this, 'mayalanmatarixi'),
+                                        value: inputs.mayalanmatarixi.value,
+                                    }}
+                                />
+                                <Input
+                                    label='Anasının bilka nömrəsi'
+                                    textinputConfig={{
+                                        keyboardType: 'numeric',
+                                        // maxLength: 10,
+                                        onChangeText: inputChangeHandler.bind(this, 'motherBilka'),
+                                        value: inputs.motherBilka.value,
+                                    }}
+                                />
+                            </>
+                            : <></>
+
+                    }
+                    {
+                        selectGetWay === 'Alınıb' ?
+                            <>
+                                <Input
+                                    label='Alınma tarixi'
+                                    textinputConfig={{
+                                        placeholder: 'İy-ay-gün',
+                                        keyboardType: 'numeric',
+                                        maxLength: 10,
+                                        onChangeText: inputChangeHandler.bind(this, 'buyDate'),
+                                        value: inputs.buyDate.value,
+                                    }}
+                                />
+
+                                <Input
+                                    label='Alındıqı yer və şəxs'
+                                    textinputConfig={{
+                                        onChangeText: inputChangeHandler.bind(this, 'getFrom'),
+                                        value: inputs.getFrom.value,
+                                    }}
+                                />
+                            </>
+                            : <></>
+
+                    }
                     <Input
                         label='Günlük süd miqdarı'
                         textinputConfig={{
@@ -148,9 +283,29 @@ function ManageCow({ route, defaultValues }) {
                             value: inputs.info.value,
                         }}
                     />
-                    <Button 
-                        title='Təsdiq et'
-                    />
+                    <View style={styles.radioButtonContainer}>
+                        <Button
+                            text='Təsdiq et'
+                            style={styles.button}
+                            color={GlobalStyles.colors.primary800}
+                        />
+                        {id === undefined ? '' :
+                            <>
+                                <Button
+                                    text='Sil'
+                                    style={styles.button}
+                                    color='red'
+
+                                />
+                                <Button
+                                    text='Statusunu dəyiş'
+                                    style={styles.button}
+                                    color='green'
+
+                                />
+                            </>
+                        }
+                    </View>
                 </ScrollView>
             </View>
         </>
@@ -171,5 +326,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: GlobalStyles.colors.gray700,
         textAlign: 'center',
-    }
+    },
+    radioButtonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+    },
 })
