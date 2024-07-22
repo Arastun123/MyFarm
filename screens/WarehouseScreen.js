@@ -6,8 +6,8 @@ import { GlobalStyles } from "../constants/styles";
 
 function WarehouseScreen() {
     const navigation = useNavigation();
-    function changeScreen(screen) {
-        navigation.navigate(screen);
+    function changeScreen(screen, name, tablename) {
+        navigation.navigate(screen, { name, tablename });
     }
 
     return (
@@ -18,7 +18,7 @@ function WarehouseScreen() {
                         styles.cardContainer,
                         pressed && styles.press
                     ]}
-                    onPress={() => changeScreen('Tractor')}
+                    onPress={() => changeScreen('Item', 'Neqliyat vasitəsi', 'vehicles')}
                 >
                     <FontAwesome6 name='tractor' size={30} color={GlobalStyles.colors.primary700} />
                     <Text style={styles.cardTitle}>Tractor</Text>
@@ -28,7 +28,7 @@ function WarehouseScreen() {
                         styles.cardContainer,
                         pressed && styles.press
                     ]}
-                    onPress={() => changeScreen('Yem')}
+                    onPress={() => changeScreen('Item', 'Yem', 'feed')}
                 >
                     <MaterialCommunityIcons name='grass' size={30} color={GlobalStyles.colors.primary700} />
                     <Text style={styles.cardTitle}>Yem</Text>
@@ -40,7 +40,7 @@ function WarehouseScreen() {
                         styles.cardContainer,
                         pressed && styles.press
                     ]}
-                    onPress={() => changeScreen('Dərman')}
+                    onPress={() => changeScreen('Item', 'Dərman', 'medicine')}
                 >
                     <AntDesign name="medicinebox" size={30} color={GlobalStyles.colors.primary700} />
                     <Text style={styles.cardTitle}>Dərman</Text>
@@ -50,10 +50,10 @@ function WarehouseScreen() {
                         styles.cardContainer,
                         pressed && styles.press
                     ]}
-                    onPress={() => changeScreen('Anbar')}
+                    onPress={() => changeScreen('Item', 'Texniki alətlər', 'tools')}
                 >
-                    <FontAwesome6 name='warehouse' size={30} color={GlobalStyles.colors.primary700} />
-                    <Text style={styles.cardTitle}>Anbar</Text>
+                    <AntDesign name="tool" size={30} color={GlobalStyles.colors.primary700} />
+                    <Text style={styles.cardTitle}>Texniki alətlər</Text>
                 </Pressable>
             </View>
         </View>

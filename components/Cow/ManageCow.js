@@ -3,12 +3,12 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useState } from "react";
 import { Dimensions } from 'react-native';
 
-import Input from "./UI/Input";
-import Button from "./UI/Button";
-import RadioButton from "./UI/RadioButton";
-import { getFormatedDate } from "../util/date";
-import { GlobalStyles } from "../constants/styles";
-import Dropdown from "./UI/Dropdown";
+import Input from "../UI/Input";
+import Button from "../UI/Button";
+import RadioButton from "../UI/RadioButton";
+import { getFormatedDate } from "../../util/date";
+import { GlobalStyles } from "../../constants/styles";
+import Dropdown from "../UI/Dropdown";
 
 const { width, height } = Dimensions.get('window');
 

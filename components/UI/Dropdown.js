@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, View } from "react-native";
+
 import { GlobalStyles } from "../../constants/styles";
 import Button from "./Button";
 

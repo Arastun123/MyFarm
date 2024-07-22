@@ -1,4 +1,5 @@
 import { View, Text, TextInput, StyleSheet } from "react-native";
+
 import { GlobalStyles } from "../../constants/styles";
 
 function Input({ label, textinputConfig }) {

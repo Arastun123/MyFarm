@@ -9,8 +9,10 @@ import MilkScreen from './screens/MilkScreen';
 import CowsScreen from './screens/CowsScreen';
 import FinanceScreen from './screens/FinanceScreen';
 import WarehouseScreen from './screens/WarehouseScreen';
-import ManageCow from './components/ManageCow';
+import ManageCow from './components/Cow/ManageCow';
 import HomeScreen from './screens/HomeScreen';
+import ItemScreen from './screens/ItemScreen';
+import LoginScreen from './screens/LoginScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -80,17 +82,24 @@ export default function App() {
     < >
       <StatusBar style="auto" />
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{
-          headerStyle: { backgroundColor: '#eee' },
-          headerTintColor: '#333',
-          contentStyle: { backgroundColor: '#eee' }
-        }}>
+        <Stack.Navigator
+          initialRouteName='Giriş'
+          screenOptions={{
+            headerStyle: { backgroundColor: '#eee' },
+            headerTintColor: '#333',
+            contentStyle: { backgroundColor: '#eee' }
+          }}
+        >
           <Stack.Screen
             name='Drawer'
             component={DrawerNavigator}
             options={{
               headerShown: false,
             }}
+          />
+          <Stack.Screen
+            name='Giriş'
+            component={LoginScreen}
           />
           <Stack.Screen
             name='Əsas səhifə'
@@ -115,6 +124,11 @@ export default function App() {
           <Stack.Screen
             name='Redaktə'
             component={ManageCow}
+          />
+          <Stack.Screen
+            name='Item'
+            component={ItemScreen}
+            options={({ route }) => ({ title: route.params?.name || 'Default Title' })}
           />
         </Stack.Navigator>
       </NavigationContainer>

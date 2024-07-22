@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View, Platform } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { GlobalStyles } from "../constants/styles";
-import FlatListItem from "../components/UI/FlatListItem";
-import { useNavigation } from "@react-navigation/native";
+import FlatListItem from '../components/Cow/FlatListItem'
 import FixedButton from "../components/UI/FixedButton";
 
 const cows = [
@@ -91,7 +91,7 @@ function CowsScreen() {
                             category={item.categories.join(',')}
                             age={item.age}
                             health={item.health}
-                        />
+                        />                        
                     )}
                     keyExtractor={(item) => item.id}
                     showsVerticalScrollIndicator={false}
