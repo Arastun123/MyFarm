@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     },
     row: {
         flexDirection: 'row',
-        borderWidth: 1,
+        borderWidth: 0.5,
         borderColor: '#ddd',
         justifyContent: 'space-between',
     },
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRightWidth: 1,
         borderColor: '#ddd',
-        borderWidth: 1,
+        borderWidth: 0.3,
     },
     cellText: {
         textAlign: 'center',

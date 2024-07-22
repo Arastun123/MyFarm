@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginTop: 10,
         fontWeight: 'bold',
-        color: GlobalStyles.colors.gray700,
+        color: GlobalStyles.colors.primary800,
         textAlign: 'center',
     },
     radioButtonContainer: {

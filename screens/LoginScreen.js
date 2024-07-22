@@ -7,8 +7,8 @@ import Button from "../components/UI/Button";
 import { GlobalStyles } from "../constants/styles";
 import { useNavigation } from "@react-navigation/native";
 
-function LoginScreen({ }) {
-    const navigation = useNavigation()
+function LoginScreen({navigation  }) {
+    
     const [inputs, setInputs] = useState({
         username: {
             value: ''
@@ -30,46 +30,52 @@ function LoginScreen({ }) {
 
     function login() {
         console.log(inputs);
-        navigation.navigate('Əsas səhifə');
+        navigation.replace('DrawerStack');
     }
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}>Daxil olmaq üçün sizə təyin olunmuş istifadəçi adı və parolu daxil edin!</Text>
-            <Input
-                label='Istifadəçi adı'
-                textinputConfig={{
-                    onChangeText: inputChangeHandler.bind(this, 'unsername'),
-                    value: inputs.username,
-                }}
-            />
-            <View style={styles.passwordContainer}>
-                <View style={{ flex: 1 }}>
-                    <Input
-                        label='Parol'
-                        textinputConfig={{
-                            onChangeText: inputChangeHandler.bind(this, 'password'),
-                            value: inputs.password,
-                            secureTextEntry: !passwordVisible
-                        }}
+        <>
+            <Text style={styles.title}>Farm Managment</Text>
+            <View style={styles.container}>
+                <Text style={styles.text}>Daxil olmaq üçün sizə təyin olunmuş istifadəçi adı və parolu daxil edin!</Text>
+                <Input
+                    label='İstifadəçi adı'
+                    textinputConfig={{
+                        onChangeText: inputChangeHandler.bind(this, 'unsername'),
+                        value: inputs.username,
+                    }}
+                />
+                <View style={styles.passwordContainer}>
+                    <View style={{ flex: 1 }}>
+                        <Input
+                            label='Parol'
+                            textinputConfig={{
+                                onChangeText: inputChangeHandler.bind(this, 'password'),
+                                value: inputs.password,
+                                secureTextEntry: !passwordVisible
+                            }}
+                        />
+                    </View>
+                    <Pressable onPress={() => setPasswordVisible(!passwordVisible)}>
+                        <Feather
+                            name={passwordVisible ? 'eye-off' : 'eye'}
+                            size={16}
+                            color={GlobalStyles.colors.primary800}
+                            style={styles.toggleText}
+                        />
+                    </Pressable>
+                </View>
+
+                <View style={{ alignItems: 'center' }}>
+                    <Button
+                        text='Daxil ol'
+                        onPress={login}
+                        color='green'
                     />
                 </View>
-                <Pressable onPress={() => setPasswordVisible(!passwordVisible)}>
-                    <Feather
-                        name={passwordVisible ? 'eye-off' : 'eye'}
-                        size={16}
-                        color={GlobalStyles.colors.primary800}
-                        style={styles.toggleText}
-                    />
-                </Pressable>
+
+
             </View>
-
-            <Button
-                text='Daxil ol'
-                onPress={login}
-                color='green'
-            />
-
-        </View>
+        </>
     )
 }
 
@@ -81,9 +87,17 @@ const styles = StyleSheet.create({
         padding: 20,
         justifyContent: 'center',
     },
+    title: {
+        fontSize: 34,
+        fontWeight: 'bold',
+        color: GlobalStyles.colors.primary800,
+        textAlign: 'center',
+        marginTop: '20%',
+    },
     text: {
         fontSize: 16,
         color: GlobalStyles.colors.primary800,
+        textAlign: 'center',
     },
     passwordContainer: {
         flexDirection: 'row',
