@@ -1,6 +1,6 @@
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { FontAwesome } from '@expo/vector-icons';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dimensions } from 'react-native';
 
 import Input from "../UI/Input";
@@ -13,8 +13,12 @@ import Dropdown from "../UI/Dropdown";
 const { width, height } = Dimensions.get('window');
 
 function ManageCow({ route }) {
-    const { id, defaultValue, title } = route.params;
+    const { id, defaultValue, title, tableName, name } = route.params;
 
+    const [selectedGender, setSelectedGender] = useState('');
+    const [selectGetWay, setSelectGetWay] = useState('');
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [animalCategory, setAnimalCategory] = useState('');
     const [inputs, setInputs] = useState({
         number: {
             value: defaultValue ? defaultValue.number.toString() : '',
@@ -73,11 +77,6 @@ function ManageCow({ route }) {
             isValid: true
         }
     });
-    const [selectedGender, setSelectedGender] = useState('');
-    const [selectGetWay, setSelectGetWay] = useState('');
-    const [showDropdown, setShowDropdown] = useState(false);
-    const [selectedOption, setSelectedOption] = useState(null);
-
 
     function inputChangeHandler(inputIdentifier, enteredValue) {
         setInputs((curInputValues) => {
@@ -103,6 +102,9 @@ function ManageCow({ route }) {
                 break;
         }
     };
+    useEffect(() => {
+        setAnimalCategory(name);
+    })
 
     function submitCow() { }
 
@@ -142,20 +144,46 @@ function ManageCow({ route }) {
                     />
                     <View style={styles.radioButtonContainer}>
                         <RadioButton
-                            text='Erkək'
-                            selected={selectedGender === 'Erkək'}
+                            text='İnək'
+                            selected={animalCategory === 'İnək'}
                             onSelect={() => {
-                                setSelectedGender('Erkək')
+                                setAnimalCategory('İnək')
                             }}
                         />
                         <RadioButton
-                            text='Dişi'
-                            selected={selectedGender === 'Dişi'}
+                            text='Gənc'
+                            selected={animalCategory === 'Gənc'}
                             onSelect={() => {
-                                setSelectedGender('Dişi')
+                                setAnimalCategory('Gənc')
+                            }}
+                        />
+                        <RadioButton
+                            text='Buzov'
+                            selected={animalCategory === 'Buzov'}
+                            onSelect={() => {
+                                setAnimalCategory('Buzov')
                             }}
                         />
                     </View>
+                    {
+                        animalCategory === 'İnək' ? '' :
+                            <View style={styles.radioButtonContainer}>
+                                <RadioButton
+                                    text='Erkək'
+                                    selected={selectedGender === 'Erkək'}
+                                    onSelect={() => {
+                                        setSelectedGender('Erkək')
+                                    }}
+                                />
+                                <RadioButton
+                                    text='Dişi'
+                                    selected={selectedGender === 'Dişi'}
+                                    onSelect={() => {
+                                        setSelectedGender('Dişi')
+                                    }}
+                                />
+                            </View>
+                    }
                     <Input
                         label="Tarix"
                         textinputConfig={{
@@ -165,29 +193,19 @@ function ManageCow({ route }) {
                             value: inputs.date.value,
                         }}
                     />
-                    <Input
-                        label="Fermaya daxil olduqu tarix"
-                        textinputConfig={{
-                            placeholder: 'İl-ay-gün',
-                            maxLength: 10,
-                            onChangeText: inputChangeHandler.bind(this, 'enteredDate'),
-                            value: inputs.enteredDate.value,
-                        }}
-                    />
-                    <Text>Daxil olduqu qrup</Text>
                     <View style={styles.radioButtonContainer}>
                         <RadioButton
-                            text='Mayalanma'
-                            selected={selectGetWay === 'Mayalanma'}
+                            text='Süni Mayalanma'
+                            selected={selectGetWay === 'Süni Mayalanma'}
                             onSelect={() => {
-                                setSelectGetWay('Mayalanma')
+                                setSelectGetWay('Süni Mayalanma')
                             }}
                         />
                         <RadioButton
-                            text='Təbii yolla'
-                            selected={selectGetWay === 'Təbii yolla'}
+                            text='Təbii Mayalanma'
+                            selected={selectGetWay === 'Təbii Mayalanma'}
                             onSelect={() => {
-                                setSelectGetWay('Təbii yolla')
+                                setSelectGetWay('Təbii Mayalanma')
                             }}
                         />
                         <RadioButton

@@ -1,101 +1,59 @@
-import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { FontAwesome6 } from '@expo/vector-icons';
 
 import { GlobalStyles } from "../constants/styles";
-import FlatListItem from '../components/Cow/FlatListItem'
 import FixedButton from "../components/UI/FixedButton";
 
-const cows = [
-    { id: '1', name: 'Bessie', categories: ['inək', 'xəstə'], age: 4, health: 'Healthy' },
-    { id: '2', name: 'Molly', categories: ['düyə'], age: 2, health: 'Healthy' },
-    { id: '3', name: 'Daisy', categories: ['boğaz'], age: 5, health: 'Pregnant' },
-    { id: '4', name: 'Duke', categories: ['erkək'], age: 3, health: 'Healthy' },
-    { id: '5', name: 'Bella', categories: ['dişi', 'sağmal'], age: 6, health: 'Healthy' },
-    { id: '6', name: 'Lucy', categories: ['sağmal'], age: 7, health: 'Healthy' },
-    { id: '7', name: 'Lola', categories: ['xəstə'], age: 8, health: 'Sick' },
-    { id: '8', name: 'Sam', categories: ['subay', 'buzov'], age: 4, health: 'Healthy' },
-    { id: '9', name: 'Cek', categories: ['inək'], age: 4, health: 'Healthy' },
-    { id: '10', name: 'Me', categories: ['düyə'], age: 2, health: 'Healthy' },
-    { id: '11', name: 'Daisy', categories: ['boğaz'], age: 5, health: 'Pregnant' },
-    { id: '12', name: 'Duke', categories: ['erkək'], age: 3, health: 'Healthy' },
-    { id: '13', name: 'Bella', categories: ['dişi'], age: 6, health: 'Healthy' },
-    { id: '14', name: 'Lucy', categories: ['sağmal'], age: 7, health: 'Healthy' },
-    { id: '15', name: 'Lola', categories: ['xəstə'], age: 8, health: 'Sick' },
-    { id: '16', name: 'Sam', categories: ['subay'], age: 4, health: 'Healthy' },
-];
-
 function CowsScreen() {
-    const [filteredCows, setFilteredCows] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState(null);
     const navigation = useNavigation();
-    let title = 'Yeni məlumat'; 
-    let categoriesCount = {};
-
-    cows.forEach(cow => {
-        cow.categories.forEach(category => {
-            if (categoriesCount[category]) {
-                categoriesCount[category]++;
-            } else {
-                categoriesCount[category] = 1;
-            }
-        });
-    });
-
-    let formattedCategories = Object.keys(categoriesCount).map(category => {
-        return { name: category, label: `${category} (${categoriesCount[category]})` };
-    });
-
-    formattedCategories.push({ name: 'sıfırla', label: 'sıfırla' });
-
-
-    function showSelectedCatogory(category) {
-        if (category === 'sıfırla') {
-            setFilteredCows([]);
-            setSelectedCategory(null);
-        }
-        else {
-            const selectedCow = cows.filter(cow => cow.categories.includes(category));
-            setFilteredCows(selectedCow);
-            setSelectedCategory(category);
-        }
-    }
+    let title = 'Yeni məlumat';
 
     function addCow() {
         navigation.navigate('Redaktə', { title })
     }
 
+    function changeScreen(screen, name, tableName) {
+        navigation.navigate(screen, { name, tableName });
+    }
+
     return (
-        <View style={styles.container}>
-            <View style={styles.categoriesContainer}>
-                {formattedCategories.map((category, index) => (
+        <View style={{ flex: 1, marginHorizontal: 15 }}>
+            <View style={styles.container}>
+                <View style={styles.row}>
                     <Pressable
-                        style={({ pressed }) => [styles.categoryText, pressed ? styles.buttonPressed : null]}
-                        key={index}
-                        onPress={() => showSelectedCatogory(category.name)}
+                        style={({ pressed }) => [
+                            styles.cardContainer,
+                            pressed && styles.press
+                        ]}
+                        onPress={() => changeScreen('Heyvan', 'İnək', 'cows')}
                     >
-                        <Text style={styles.text}>{category.label}</Text>
+                        <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
+                        <Text style={styles.cardTitle}>İnəklər</Text>
                     </Pressable>
-                ))}
-            </View>
-
-            <Text style={styles.text}>Toplam heyvan sayı: {formattedCategories.length.toString()}</Text>
-
-            <View style={styles.flatContainer}>
-                <FlatList
-                    data={selectedCategory !== null ? filteredCows : cows}
-                    renderItem={({ item }) => (
-                        <FlatListItem
-                            id={item.id}
-                            name={item.name}
-                            category={item.categories.join(',')}
-                            age={item.age}
-                            health={item.health}
-                        />                        
-                    )}
-                    keyExtractor={(item) => item.id}
-                    showsVerticalScrollIndicator={false}
-                />
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.cardContainer,
+                            pressed && styles.press
+                        ]}
+                        onPress={() => changeScreen('Heyvan', 'Buzov', 'buzov')}
+                    >
+                        <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
+                        <Text style={styles.cardTitle}>Buzovlar</Text>
+                    </Pressable>
+                </View>
+                <View style={{ ...styles.row, justifyContent: 'center' }}>
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.cardContainer,
+                            pressed && styles.press
+                        ]}
+                        onPress={() => changeScreen('Heyvan', 'Gənc', 'younge')}
+                    >
+                        <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
+                        <Text style={styles.cardTitle}>Gənclər</Text>
+                    </Pressable>
+                </View>
             </View>
             <FixedButton
                 onPress={addCow}
@@ -110,34 +68,41 @@ export default CowsScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginHorizontal: 15,
+        justifyContent: 'center',
+        padding: 10,
+        paddingBottom: 20
     },
-    flatContainer: {
-        flex: 1,
-        marginBottom: 10,
-    },
-    categoriesContainer: {
+    row: {
         flexDirection: 'row',
-        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        alignContent: 'center',
+    },
+    cardContainer: {
+        width: '45%',
+        height: 120,
+        margin: 10,
+        padding: 5,
+        borderRadius: 2,
+        textAlign: 'center',
+        elevation: 3,
+        shadowColor: GlobalStyles.colors.primary800,
+        shadowOpacity: 0.5,
+        shadowRadius: 1,
+        shadowOffset: { width: 1, height: 1 },
+        shadowOpacity: 0.4,
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    categoryText: {
-        margin: 6,
-        borderRadius: 6,
-        borderWidth: 1,
-        borderColor: GlobalStyles.colors.primary200,
-    },
-    text: {
-        padding: 6,
-        color: GlobalStyles.colors.primary700,
-        fontSize: 16,
+    cardTitle: {
         textAlign: 'center',
-        textTransform: 'uppercase',
+        fontSize: 20,
+        fontWeight: 'bold',
+        padding: 10,
+        color: GlobalStyles.colors.primary700,
     },
-    buttonPressed: {
-        opacity: .5,
-        backgroundColor: GlobalStyles.colors.primary700,
-        overflow: 'hidden',
+    press: {
+        opacity: 0.75,
+        backgroundColor: GlobalStyles.colors.primary200,
     }
 });

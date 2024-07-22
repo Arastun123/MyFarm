@@ -14,6 +14,7 @@ import ManageCow from './components/Cow/ManageCow';
 import HomeScreen from './screens/HomeScreen';
 import ItemScreen from './screens/ItemScreen';
 import LoginScreen from './screens/LoginScreen';
+import CategoryCowScreen from './screens/CategoryCowScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -42,10 +43,10 @@ function DrawerNavigator() {
       />
 
       <Drawer.Screen
-        name='İnəklər'
+        name='Heyvanlar'
         component={CowsScreen}
         options={{
-          title: 'İnəklər',
+          title: 'Heyvanlar',
           drawerIcon: ({ color, size }) => <FontAwesome6 name='cow' size={size} color={color} />
         }}
       />
@@ -84,7 +85,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   function handleLogin() {
-    setIsLoggedIn(true);  // Update state to logged in
+    setIsLoggedIn(true); 
   }
 
   return (
@@ -115,6 +116,11 @@ export default function App() {
         <Stack.Screen
           name='Item'
           component={ItemScreen}
+          options={({ route }) => ({ title: route.params?.name || 'Default Title' })}
+        />
+        <Stack.Screen 
+          name='Heyvan'
+          component={CategoryCowScreen}
           options={({ route }) => ({ title: route.params?.name || 'Default Title' })}
         />
       </Stack.Navigator>

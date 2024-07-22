@@ -19,10 +19,10 @@ function HomeScreen() {
                         styles.cardContainer,
                         pressed && styles.press
                     ]}
-                    onPress={() => changeScreen('İnəklər')}
+                    onPress={() => changeScreen('Heyvanlar')}
                 >
                     <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
-                    <Text style={styles.cardTitle}>İnəklər</Text>
+                    <Text style={styles.cardTitle}>Heyvanlar</Text>
                 </Pressable>
                 <Pressable
                     style={({ pressed }) => [
