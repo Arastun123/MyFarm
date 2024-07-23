@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -15,11 +15,17 @@ import HomeScreen from './screens/HomeScreen';
 import ItemScreen from './screens/ItemScreen';
 import LoginScreen from './screens/LoginScreen';
 import CategoryCowScreen from './screens/CategoryCowScreen';
+import Button from './components/UI/Button';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
 function DrawerNavigator() {
+  const navigation = useNavigation();
+  const handleLogout = () => {
+    navigation.navigate('Giriş')
+  };
+
   return (
     <Drawer.Navigator
       screenOptions={{
@@ -30,7 +36,10 @@ function DrawerNavigator() {
         drawerInactiveTintColor: '#333',
         drawerActiveTintColor: '#333',
         drawerActiveBackgroundColor: '#351401',
-        drawerActiveBackgroundColor: '#aaa'
+        drawerActiveBackgroundColor: '#aaa',
+        headerRight: () => (
+          <LogoutButton onPress={handleLogout} />
+        ),
       }}
     >
       <Drawer.Screen
@@ -81,12 +90,23 @@ function DrawerNavigator() {
   );
 }
 
+function LogoutButton({ onPress }) {
+  return (
+    <Button title="Logout" onPress={onPress} color="none" text={<MaterialCommunityIcons name="logout" size={24} color="#333" />} />
+  );
+}
+
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   function handleLogin() {
-    setIsLoggedIn(true); 
+    setIsLoggedIn(true);
   }
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    console.log('logout');
+  };
 
   return (
     <NavigationContainer>
@@ -96,7 +116,14 @@ export default function App() {
         screenOptions={{
           headerStyle: { backgroundColor: '#eee' },
           headerTintColor: '#333',
-          contentStyle: { backgroundColor: '#eee' }
+          contentStyle: { backgroundColor: '#eee' },
+          headerRight: () => (
+            <Button
+              onPress={() => alert('This is a button!')}
+              text={<MaterialCommunityIcons name="logout" size={24} color="#333" />}
+              color="none"
+            />
+          ),
         }}
       >
         <Stack.Screen
@@ -118,7 +145,7 @@ export default function App() {
           component={ItemScreen}
           options={({ route }) => ({ title: route.params?.name || 'Default Title' })}
         />
-        <Stack.Screen 
+        <Stack.Screen
           name='Heyvan'
           component={CategoryCowScreen}
           options={({ route }) => ({ title: route.params?.name || 'Default Title' })}

@@ -1,4 +1,6 @@
 import { Pressable, StyleSheet, Text } from "react-native";
+import { AntDesign } from '@expo/vector-icons';
+
 import { GlobalStyles } from "../../constants/styles";
 
 function Button({ text, onPress, color }) {

@@ -10,11 +10,10 @@ import { useNavigation } from "@react-navigation/native";
 
 function LoginScreen({ navigation }) {
     const [passwordVisible, setPasswordVisible] = useState(false);
-
+    const [error, setError] = useState('');
     const [inputs, setInputs] = useState({
         username: '',
         password: '',
-        email: '',
     });
 
     function inputChangeHandler(inputIdentifier, enteredValue) {
@@ -22,32 +21,24 @@ function LoginScreen({ navigation }) {
             ...curValues,
             [inputIdentifier]: enteredValue
         }));
+        setError('');
     }
 
     async function login() {
-        console.log(inputs);
-
         if (!inputs.username || !inputs.password) {
-            console.error('Please fill all fields.');
+            setError('Zəhmət olmasa boşluqları doldurun.');
             return;
         }
 
         try {
-            const response = await axios.post('http://192.168.1.69:3000/auth/register', {
+            const response = await axios.post('http://192.168.1.69:3000/auth/login', {
                 username: inputs.username,
-                email: inputs.email,
                 password: inputs.password,
             });
-            console.log('Registration successful', response.data);
-            navigation.replace('DrawerStack');
+            if (response.status === 200) navigation.replace('DrawerStack');
+
         } catch (error) {
-            if (error.response) {
-                console.error('Registration error', error.response.data);
-            } else if (error.request) {
-                console.error('No response received', error.request);
-            } else {
-                console.error('Error', error.message);
-            }
+            setError('İstifadəçi adı və ya parol yanlnışdır');
         }
     }
 
@@ -56,6 +47,7 @@ function LoginScreen({ navigation }) {
             <Text style={styles.title}>Farm Managment</Text>
             <View style={styles.container}>
                 <Text style={styles.text}>Daxil olmaq üçün sizə təyin olunmuş istifadəçi adı və parolu daxil edin!</Text>
+                {error !== '' ? <Text style={{ ...styles.text, color: 'red' }}>{error}</Text> : ''}
                 <Input
                     label='İstifadəçi adı'
                     textinputConfig={{
@@ -63,13 +55,7 @@ function LoginScreen({ navigation }) {
                         value: inputs.username,
                     }}
                 />
-                <Input
-                    label='Email'
-                    textinputConfig={{
-                        onChangeText: inputChangeHandler.bind(this, 'email'),
-                        value: inputs.email,
-                    }}
-                />
+
                 <View style={styles.passwordContainer}>
                     <View style={{ flex: 1 }}>
                         <Input
