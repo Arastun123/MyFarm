@@ -5,6 +5,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import MilkScreen from './screens/MilkScreen';
 import CowsScreen from './screens/CowsScreen';
@@ -22,8 +23,11 @@ const Drawer = createDrawerNavigator();
 
 function DrawerNavigator() {
   const navigation = useNavigation();
-  const handleLogout = () => {
-    navigation.navigate('Giriş')
+
+  async function handleLogout() {
+    navigation.replace('Giriş')
+    AsyncStorage.setItem('token', null);
+    AsyncStorage.setItem('role', null);
   };
 
   return (
@@ -37,9 +41,6 @@ function DrawerNavigator() {
         drawerActiveTintColor: '#333',
         drawerActiveBackgroundColor: '#351401',
         drawerActiveBackgroundColor: '#aaa',
-        headerRight: () => (
-          <LogoutButton onPress={handleLogout} />
-        ),
       }}
     >
       <Drawer.Screen
@@ -47,7 +48,10 @@ function DrawerNavigator() {
         component={HomeScreen}
         options={{
           title: 'Əsas səhifə',
-          drawerIcon: ({ color, size }) => <MaterialCommunityIcons name='home' size={size} color={color} />
+          drawerIcon: ({ color, size }) => <MaterialCommunityIcons name='home' size={size} color={color} />,
+          headerRight: () => (
+            <LogoutButton onPress={handleLogout} />
+          ),
         }}
       />
 
@@ -99,59 +103,45 @@ function LogoutButton({ onPress }) {
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  function handleLogin() {
-    setIsLoggedIn(true);
-  }
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    console.log('logout');
-  };
-
   return (
-    <NavigationContainer>
-      <StatusBar style="auto" />
-      <Stack.Navigator
-        initialRouteName={isLoggedIn ? 'DrawerStack' : 'Giriş'}
-        screenOptions={{
-          headerStyle: { backgroundColor: '#eee' },
-          headerTintColor: '#333',
-          contentStyle: { backgroundColor: '#eee' },
-          headerRight: () => (
-            <Button
-              onPress={() => alert('This is a button!')}
-              text={<MaterialCommunityIcons name="logout" size={24} color="#333" />}
-              color="none"
-            />
-          ),
-        }}
-      >
-        <Stack.Screen
-          name='Giriş'
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name='DrawerStack'
-          component={DrawerNavigator}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name='Redaktə'
-          component={ManageCow}
-        />
-        <Stack.Screen
-          name='Item'
-          component={ItemScreen}
-          options={({ route }) => ({ title: route.params?.name || 'Default Title' })}
-        />
-        <Stack.Screen
-          name='Heyvan'
-          component={CategoryCowScreen}
-          options={({ route }) => ({ title: route.params?.name || 'Default Title' })}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <>
+      <NavigationContainer>
+        <StatusBar style="auto" />
+        <Stack.Navigator
+          initialRouteName={isLoggedIn ? 'DrawerStack' : 'Giriş'}
+          screenOptions={{
+            headerStyle: { backgroundColor: '#eee' },
+            headerTintColor: '#333',
+            contentStyle: { backgroundColor: '#eee' },
+          }}
+        >
+          <Stack.Screen
+            name='Giriş'
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name='DrawerStack'
+            component={DrawerNavigator}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name='Redaktə'
+            component={ManageCow}
+          />
+          <Stack.Screen
+            name='Item'
+            component={ItemScreen}
+            options={({ route }) => ({ title: route.params?.name || 'Default Title' })}
+          />
+          <Stack.Screen
+            name='Heyvan'
+            component={CategoryCowScreen}
+            options={({ route }) => ({ title: route.params?.name || 'Default Title' })}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </>
   );
 }
 

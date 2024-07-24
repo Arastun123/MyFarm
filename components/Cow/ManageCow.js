@@ -9,7 +9,9 @@ import RadioButton from "../UI/RadioButton";
 import { getFormatedDate } from "../../util/date";
 import { GlobalStyles } from "../../constants/styles";
 import Dropdown from "../UI/Dropdown";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { addData } from "../../util/http";
+import axios from "axios";
 const { width, height } = Dimensions.get('window');
 
 function ManageCow({ route }) {
@@ -19,9 +21,10 @@ function ManageCow({ route }) {
     const [selectGetWay, setSelectGetWay] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
     const [animalCategory, setAnimalCategory] = useState('');
+    const [userData, setUserData] = useState(null);
     const [inputs, setInputs] = useState({
-        number: {
-            value: defaultValue ? defaultValue.number.toString() : '',
+        bilka_number: {
+            value: defaultValue ? defaultValue.bilka_number.toString() : '',
             isValid: true
         },
         name: {
@@ -36,47 +39,60 @@ function ManageCow({ route }) {
             value: defaultValue ? defaultValue.date : '',
             isValid: true
         },
-        enteredDate: {
-            value: defaultValue ? defaultValue.enteredDate : '',
+        birthdate: {
+            value: defaultValue ? defaultValue.birthdate : '',
             isValid: true
         },
-        milk: {
-            value: defaultValue ? defaultValue.milk.toString() : '',
+        milk_quantity: {
+            value: defaultValue ? defaultValue.milk_quantity.toString() : '',
             isValid: true
         },
         vaccine: {
             value: defaultValue ? defaultValue.vaccine : '',
             isValid: true
         },
-        illnes: {
-            value: defaultValue ? defaultValue.illnes : '',
+        illness: {
+            value: defaultValue ? defaultValue.illness : '',
             isValid: true
         },
-        info: {
+        other_info: {
             value: defaultValue ? defaultValue.info : '',
             isValid: true
         },
-        motherBilka: {
-            value: defaultValue ? defaultValue.motherBilka : '',
+        mother_bilka: {
+            value: defaultValue ? defaultValue.mother_bilka : '',
             isValid: true
         },
-        fatherBilka: {
-            value: defaultValue ? defaultValue.fatherBilka : '',
+        father_bilka: {
+            value: defaultValue ? defaultValue.father_bilka : '',
             isValid: true
         },
-        mayalanmatarixi: {
-            value: defaultValue ? defaultValue.mayalanmatarixi : '',
-            isValid: true
-        },
-        buyDate: {
-            value: defaultValue ? defaultValue.buyDate : '',
+        insemination_date: {
+            value: defaultValue ? defaultValue.insemination_date : '',
             isValid: true
         },
         getFrom: {
             value: defaultValue ? defaultValue.getFrom : '',
             isValid: true
-        }
+        },
+        child_id: {
+            value: defaultValue ? defaultValue.child_id : '',
+            isValid: true
+        },
+        last_checkup_date: {
+            value: defaultValue ? defaultValue.last_checkup_date : '',
+            isValid: true
+        },
+        health_status: {
+            value: defaultValue ? defaultValue.health_status : '',
+            isValid: true
+        },
+        diet: {
+            value: defaultValue ? defaultValue.diet : '',
+            isValid: true
+        },
     });
+    let role = AsyncStorage.getItem('role');
 
     function inputChangeHandler(inputIdentifier, enteredValue) {
         setInputs((curInputValues) => {
@@ -102,11 +118,66 @@ function ManageCow({ route }) {
                 break;
         }
     };
+
     useEffect(() => {
-        setAnimalCategory(name);
+        name !== undefined ? setAnimalCategory(name) : ''
+        animalCategory === 'İnək' ? setSelectedGender('Dişi') : ''
+
+        const loadUserData = async () => {
+            const role = await AsyncStorage.getItem('role');
+            const token = await AsyncStorage.getItem('token');
+            const username = await AsyncStorage.getItem('username');
+            setUserData({ role, token, username });
+        };
+        loadUserData();
     })
 
-    function submitCow() { }
+    async function submitCow() {
+        let endPoint = 'http://192.168.1.69:3000/cows/add-cow';
+        let data = {};
+        console.log(userData.role);
+        try {
+            if (inputs !== '') {
+                data = {
+                    bilka_number: inputs.bilka_number.value,
+                    name: inputs.name.value,
+                    weight: inputs.weight.value,
+                    gender: selectedGender,
+                    birthdate: inputs.birthdate.value,
+                    type: animalCategory,
+                    milk_quantity: inputs.milk_quantity.value,
+                    vaccine: inputs.vaccine.value,
+                    illness: inputs.illness.value,
+                    mother_bilka: inputs.mother_bilka.value,
+                    father_bilka: inputs.father_bilka.value,
+                    insemination_date: inputs.insemination_date.value,
+                    how_get: selectGetWay,
+                    get_from: inputs.getFrom.value,
+                    other_info: inputs.other_info.value,
+                    child_id: inputs.child_id.value,
+                    last_checkup_date: inputs.last_checkup_date.value,
+                    health_status: inputs.health_status.value,
+                    diet: inputs.diet.value,
+                    username: userData.username,
+                    role: userData.role,
+                };
+
+                const response = await axios.post(endPoint, data, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                Alert.alert('Success', response.data.message);
+            } else {
+                Alert.alert('Error', 'Please fill in all required fields.');
+            }
+        } catch (error) {
+            console.error('Error submitting cow data:', error);
+            Alert.alert('Error', 'An error occurred while submitting cow data.');
+        }
+    }
+
 
     function deleteCow(id) { }
 
@@ -120,9 +191,8 @@ function ManageCow({ route }) {
                     <Input
                         label='Bilka nomresi'
                         textinputConfig={{
-                            keyboardType: 'decimal-pad',
-                            onChangeText: inputChangeHandler.bind(this, 'number'),
-                            value: inputs.number.value,
+                            onChangeText: inputChangeHandler.bind(this, 'bilka_number'),
+                            value: inputs.bilka_number.value,
                         }}
                     />
                     <Input
@@ -185,12 +255,12 @@ function ManageCow({ route }) {
                             </View>
                     }
                     <Input
-                        label="Tarix"
+                        label="Doğum Tarix"
                         textinputConfig={{
                             placeholder: 'İl-ay-gün',
                             maxLength: 10,
-                            onChangeText: inputChangeHandler.bind(this, 'date'),
-                            value: inputs.date.value,
+                            onChangeText: inputChangeHandler.bind(this, 'birthdate'),
+                            value: inputs.birthdate.value,
                         }}
                     />
                     <View style={styles.radioButtonContainer}>
@@ -217,15 +287,15 @@ function ManageCow({ route }) {
                         />
                     </View>
                     {
-                        selectGetWay === 'Təbii yolla' ?
+                        selectGetWay === 'Təbii Mayalanma' ?
                             <>
                                 <Input
                                     label='Anasının bilka nömrəsi'
                                     textinputConfig={{
                                         keyboardType: 'numeric',
-                                        // maxLength: 10,
-                                        onChangeText: inputChangeHandler.bind(this, 'motherBilka'),
-                                        value: inputs.motherBilka.value,
+                                        maxLength: 10,
+                                        onChangeText: inputChangeHandler.bind(this, 'mother_bilka'),
+                                        value: inputs.mother_bilka.value,
                                     }}
                                 />
 
@@ -233,9 +303,9 @@ function ManageCow({ route }) {
                                     label='Atasının bilka nömrəsi'
                                     textinputConfig={{
                                         keyboardType: 'numeric',
-                                        // maxLength: 10,
-                                        onChangeText: inputChangeHandler.bind(this, 'fatherBilka'),
-                                        value: inputs.fatherBilka.value,
+                                        maxLength: 10,
+                                        onChangeText: inputChangeHandler.bind(this, 'father_bilka'),
+                                        value: inputs.father_bilka.value,
                                     }}
                                 />
                             </>
@@ -244,24 +314,23 @@ function ManageCow({ route }) {
                     }
 
                     {
-                        selectGetWay === 'Mayalanma' ?
+                        selectGetWay === 'Süni Mayalanma' ?
                             <>
                                 <Input
                                     label='Mayalanma tarixi'
                                     textinputConfig={{
                                         placeholder: 'İl-ay-gün',
                                         maxLength: 10,
-                                        onChangeText: inputChangeHandler.bind(this, 'mayalanmatarixi'),
-                                        value: inputs.mayalanmatarixi.value,
+                                        onChangeText: inputChangeHandler.bind(this, 'insemination_date'),
+                                        value: inputs.insemination_date.value,
                                     }}
                                 />
                                 <Input
                                     label='Anasının bilka nömrəsi'
                                     textinputConfig={{
-                                        keyboardType: 'numeric',
-                                        // maxLength: 10,
-                                        onChangeText: inputChangeHandler.bind(this, 'motherBilka'),
-                                        value: inputs.motherBilka.value,
+                                        maxLength: 10,
+                                        onChangeText: inputChangeHandler.bind(this, 'mother_bilka'),
+                                        value: inputs.mother_bilka.value,
                                     }}
                                 />
                             </>
@@ -271,17 +340,6 @@ function ManageCow({ route }) {
                     {
                         selectGetWay === 'Alınıb' ?
                             <>
-                                <Input
-                                    label='Alınma tarixi'
-                                    textinputConfig={{
-                                        placeholder: 'İy-ay-gün',
-                                        keyboardType: 'numeric',
-                                        maxLength: 10,
-                                        onChangeText: inputChangeHandler.bind(this, 'buyDate'),
-                                        value: inputs.buyDate.value,
-                                    }}
-                                />
-
                                 <Input
                                     label='Alındıqı yer və şəxs'
                                     textinputConfig={{
@@ -299,8 +357,8 @@ function ManageCow({ route }) {
                             placeholder: 'Litr',
                             keyboardType: 'numeric',
                             maxLength: 10,
-                            onChangeText: inputChangeHandler.bind(this, 'milk'),
-                            value: inputs.milk.value,
+                            onChangeText: inputChangeHandler.bind(this, 'milk_quantity'),
+                            value: inputs.milk_quantity.value,
                         }}
                     />
                     <Input
@@ -315,16 +373,49 @@ function ManageCow({ route }) {
                         label='Xəsdəliklər'
                         textinputConfig={{
                             multiline: true,
-                            onChangeText: inputChangeHandler.bind(this, 'illnes'),
-                            value: inputs.illnes.value,
+                            onChangeText: inputChangeHandler.bind(this, 'illness'),
+                            value: inputs.illness.value,
                         }}
                     />
                     <Input
                         label='Əlavə məlumatlar'
                         textinputConfig={{
                             multiline: true,
-                            onChangeText: inputChangeHandler.bind(this, 'info'),
-                            value: inputs.info.value,
+                            onChangeText: inputChangeHandler.bind(this, 'other_info'),
+                            value: inputs.other_info.value,
+                        }}
+                    />
+                    <Input
+                        label='Uşaqları'
+                        textinputConfig={{
+                            multiline: true,
+                            onChangeText: inputChangeHandler.bind(this, 'child_id'),
+                            value: inputs.child_id.value,
+                        }}
+                    />
+                    <Input
+                        label='Son yoxlanış tarixi'
+                        textinputConfig={{
+                            placeholder: 'İl-ay-gün',
+                            maxLength: 10,
+                            onChangeText: inputChangeHandler.bind(this, 'last_checkup_date'),
+                            value: inputs.last_checkup_date.value,
+                        }}
+                    />
+                    <Input
+                        label='Sağlamlıq vəziyəti'
+                        textinputConfig={{
+                            multiline: true,
+                            onChangeText: inputChangeHandler.bind(this, 'health_status'),
+                            value: inputs.health_status.value,
+                        }}
+                    />
+                    <Input
+                        label='Diet'
+                        textinputConfig={{
+                            multiline: true,
+                            onChangeText: inputChangeHandler.bind(this, 'diet'),
+                            value: inputs.diet.value,
                         }}
                     />
                     <View style={styles.radioButtonContainer}>

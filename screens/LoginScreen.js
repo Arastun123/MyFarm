@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Input from "../components/UI/Input";
 import Button from "../components/UI/Button";
@@ -35,12 +36,25 @@ function LoginScreen({ navigation }) {
                 username: inputs.username,
                 password: inputs.password,
             });
-            if (response.status === 200) navigation.replace('DrawerStack');
+            if (response.status === 200) {
+                navigation.replace('DrawerStack');
+               storeUserData(response.data)
+            }
 
         } catch (error) {
             setError('İstifadəçi adı və ya parol yanlnışdır');
         }
     }
+
+    const storeUserData = async (userData) => {
+        try {
+            await AsyncStorage.setItem('role', userData.role);
+            await AsyncStorage.setItem('token', userData.token);
+            await AsyncStorage.setItem('username', userData.username);
+        } catch (error) {
+            console.error('Error storing user data', error);
+        }
+    };
 
     return (
         <>
