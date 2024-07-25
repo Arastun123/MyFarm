@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -6,24 +6,6 @@ import { GlobalStyles } from "../constants/styles";
 import FlatListItem from '../components/Cow/FlatListItem'
 import FixedButton from "../components/UI/FixedButton";
 
-const cows = [
-    { id: '1', name: 'Bessie', categories: ['inək', 'boğaz'], age: 4, health: 'Healthy' },
-    { id: '2', name: 'Molly', categories: ['düyə'], age: 2, health: 'Healthy' },
-    { id: '3', name: 'Daisy', categories: ['boğaz'], age: 5, health: 'Pregnant' },
-    { id: '4', name: 'Duke', categories: ['erkək'], age: 3, health: 'Healthy' },
-    { id: '5', name: 'Bella', categories: ['dişi', 'sağmal'], age: 6, health: 'Healthy' },
-    { id: '6', name: 'Lucy', categories: ['sağmal'], age: 7, health: 'Healthy' },
-    { id: '7', name: 'Lola', categories: ['boğaz'], age: 8, health: 'Sick' },
-    { id: '8', name: 'Sam', categories: ['subay', 'buzov'], age: 4, health: 'Healthy' },
-    { id: '9', name: 'Cek', categories: ['inək'], age: 4, health: 'Healthy' },
-    { id: '10', name: 'Me', categories: ['düyə'], age: 2, health: 'Healthy' },
-    { id: '11', name: 'Daisy', categories: ['boğaz'], age: 5, health: 'Pregnant' },
-    { id: '12', name: 'Duke', categories: ['erkək'], age: 3, health: 'Healthy' },
-    { id: '13', name: 'Bella', categories: ['dişi'], age: 6, health: 'Healthy' },
-    { id: '14', name: 'Lucy', categories: ['sağmal'], age: 7, health: 'Healthy' },
-    { id: '15', name: 'Lola', categories: ['boğaz'], age: 8, health: 'Sick' },
-    { id: '16', name: 'Sam', categories: ['subay'], age: 4, health: 'Healthy' },
-];
 
 function CategoryCowScreen({ route }) {
     const [filteredCows, setFilteredCows] = useState([]);
@@ -32,16 +14,15 @@ function CategoryCowScreen({ route }) {
     let screenTitle = 'Yeni məlumat';
     let categoriesCount = {};
 
-    const { name, tableName } = route.params;
+    const { name, tableName, data } = route.params;
 
-    cows.forEach(cow => {
-        cow.categories.forEach(category => {
-            if (categoriesCount[category]) {
-                categoriesCount[category]++;
-            } else {
-                categoriesCount[category] = 1;
-            }
-        });
+    data.forEach(cow => {
+        const category = cow.type;
+        if (categoriesCount[category]) {
+            categoriesCount[category]++;
+        } else {
+            categoriesCount[category] = 1;
+        }
     });
 
     let formattedCategories = Object.keys(categoriesCount).map(category => {
@@ -50,15 +31,13 @@ function CategoryCowScreen({ route }) {
 
     formattedCategories.push({ name: 'sıfırla', label: 'sıfırla' });
 
-
-    function showSelectedCatogory(category) {
+    function showSelectedCategory(category) {
         if (category === 'sıfırla') {
             setFilteredCows([]);
             setSelectedCategory(null);
-        }
-        else {
-            const selectedCow = cows.filter(cow => cow.categories.includes(category));
-            setFilteredCows(selectedCow);
+        } else {
+            const selectedCows = data.filter(cow => cow.type === category);
+            setFilteredCows(selectedCows);
             setSelectedCategory(category);
         }
     }
@@ -66,6 +45,7 @@ function CategoryCowScreen({ route }) {
     function addCow() {
         navigation.navigate('Redaktə', { screenTitle, tableName, name })
     }
+    console.log(data);
 
     return (
         <View style={styles.container}>
@@ -74,28 +54,28 @@ function CategoryCowScreen({ route }) {
                     <Pressable
                         style={({ pressed }) => [styles.categoryText, pressed ? styles.buttonPressed : null]}
                         key={index}
-                        onPress={() => showSelectedCatogory(category.name)}
+                        onPress={() => showSelectedCategory(category.name)}
                     >
                         <Text style={styles.text}>{category.label}</Text>
                     </Pressable>
                 ))}
             </View>
 
-            <Text style={styles.text}>Toplam heyvan sayı: {cows.length.toString()}</Text>
+            <Text style={styles.text}>Toplam {name} sayı: {data.length.toString()}</Text>
 
             <View style={styles.flatContainer}>
                 <FlatList
-                    data={selectedCategory !== null ? filteredCows : cows}
+                    data={selectedCategory !== null ? filteredCows : data}
                     renderItem={({ item }) => (
                         <FlatListItem
                             id={item.id}
                             name={item.name}
-                            category={item.categories.join(',')}
-                            age={item.age}
-                            health={item.health}
+                            category={item.type} 
+                            age={item.age} 
+                            health={item.health_status} 
                         />
                     )}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item.id.toString()} 
                     showsVerticalScrollIndicator={false}
                 />
             </View>
@@ -106,7 +86,10 @@ function CategoryCowScreen({ route }) {
         </View>
     )
 }
+
 export default CategoryCowScreen;
+
+
 
 const styles = StyleSheet.create({
     container: {

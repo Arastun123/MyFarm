@@ -1,12 +1,12 @@
 import { StyleSheet, View, Text, Pressable } from "react-native";
-import { FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome6, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 
 import { GlobalStyles } from "../constants/styles";
 
-
-function HomeScreen() {
+function HomeScreen({ }) {
     const navigation = useNavigation();
+
     function changeScreen(screen) {
         navigation.navigate(screen);
     }
@@ -55,6 +55,18 @@ function HomeScreen() {
                 >
                     <FontAwesome6 name='warehouse' size={30} color={GlobalStyles.colors.primary700} />
                     <Text style={styles.cardTitle}>Anbar</Text>
+                </Pressable>
+            </View>
+            <View style={{ ...styles.row, justifyContent: 'center' }}>
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.cardContainer,
+                        pressed && styles.press
+                    ]}
+                    onPress={() => changeScreen('Gözləmə')}
+                >
+                    <MaterialIcons name="pending-actions" size={30} color={GlobalStyles.colors.primary700} />
+                    <Text style={styles.cardTitle}>Gözləmədə olan əməliyyatlar</Text>
                 </Pressable>
             </View>
         </View>

@@ -2,19 +2,22 @@ import axios from "axios";
 
 let url = 'http://192.168.1.69:3000/';
 
-function getData(tableName) {
-    let url = url + tableName;
-    const response = axios.get(url);
-    return response.data;
+export async function getData(tableName) {
+    let endPoint = url + tableName;
+    try {
+        const response = await axios.get(endPoint);
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching data from ${endPoint}:`, error);
+        throw error;
+    }
 }
 
 export async function addData(endPoint, data) {
     let url = `${url} + ${endPoint}`;
 
-    console.log('data', data);
-    console.log(url);
     try {
-        const response = await axios.post(url, { data }, {
+        const response = await axios.post(endPoint, { data }, {
             headers: {
                 'Content-Type': 'application/json'
             }

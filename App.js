@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome6, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import MilkScreen from './screens/MilkScreen';
@@ -17,6 +17,7 @@ import ItemScreen from './screens/ItemScreen';
 import LoginScreen from './screens/LoginScreen';
 import CategoryCowScreen from './screens/CategoryCowScreen';
 import Button from './components/UI/Button';
+import PendingOperation from './screens/PendingOperation';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -90,6 +91,16 @@ function DrawerNavigator() {
           drawerIcon: ({ color, size }) => <FontAwesome6 name='warehouse' size={size} color={color} />
         }}
       />
+      <Drawer.Screen
+        name='Gözləmə'
+        component={PendingOperation}
+        options={{
+          title: 'Gözləmə',
+          drawerIcon: ({ color, size }) => <MaterialIcons name="pending-actions" size={size} color={color} />
+
+        }}
+      />
+
     </Drawer.Navigator>
   );
 }
@@ -138,6 +149,10 @@ export default function App() {
             name='Heyvan'
             component={CategoryCowScreen}
             options={({ route }) => ({ title: route.params?.name || 'Default Title' })}
+          />
+          <Stack.Screen
+            name='Gözləmə'
+            component={PendingOperation}
           />
         </Stack.Navigator>
       </NavigationContainer>

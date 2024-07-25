@@ -2,6 +2,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-nati
 import { FontAwesome } from '@expo/vector-icons';
 import { useEffect, useState } from "react";
 import { Dimensions } from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Input from "../UI/Input";
 import Button from "../UI/Button";
@@ -9,9 +10,9 @@ import RadioButton from "../UI/RadioButton";
 import { getFormatedDate } from "../../util/date";
 import { GlobalStyles } from "../../constants/styles";
 import Dropdown from "../UI/Dropdown";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addData } from "../../util/http";
 import axios from "axios";
+
 const { width, height } = Dimensions.get('window');
 
 function ManageCow({ route }) {
@@ -92,8 +93,7 @@ function ManageCow({ route }) {
             isValid: true
         },
     });
-    let role = AsyncStorage.getItem('role');
-
+    
     function inputChangeHandler(inputIdentifier, enteredValue) {
         setInputs((curInputValues) => {
             return {
@@ -133,9 +133,8 @@ function ManageCow({ route }) {
     })
 
     async function submitCow() {
-        let endPoint = 'http://192.168.1.69:3000/cows/add-cow';
+        let endPoint = 'cows/add-cow';
         let data = {};
-        console.log(userData.role);
         try {
             if (inputs !== '') {
                 data = {
@@ -162,11 +161,10 @@ function ManageCow({ route }) {
                     role: userData.role,
                 };
 
-                const response = await axios.post(endPoint, data, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const response = await addData(endPoint, data);
+                if (userData.role !== 'master_admin') {
+                    Alert.alert('Sizin sorğunuz Master Admin tərəfindən təsdiq edilməlidir')
+                }
 
                 Alert.alert('Success', response.data.message);
             } else {
@@ -180,6 +178,8 @@ function ManageCow({ route }) {
 
 
     function deleteCow(id) { }
+
+
 
     return (
         <>
@@ -292,7 +292,6 @@ function ManageCow({ route }) {
                                 <Input
                                     label='Anasının bilka nömrəsi'
                                     textinputConfig={{
-                                        keyboardType: 'numeric',
                                         maxLength: 10,
                                         onChangeText: inputChangeHandler.bind(this, 'mother_bilka'),
                                         value: inputs.mother_bilka.value,
@@ -302,7 +301,6 @@ function ManageCow({ route }) {
                                 <Input
                                     label='Atasının bilka nömrəsi'
                                     textinputConfig={{
-                                        keyboardType: 'numeric',
                                         maxLength: 10,
                                         onChangeText: inputChangeHandler.bind(this, 'father_bilka'),
                                         value: inputs.father_bilka.value,

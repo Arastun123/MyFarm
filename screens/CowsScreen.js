@@ -4,18 +4,28 @@ import { FontAwesome6 } from '@expo/vector-icons';
 
 import { GlobalStyles } from "../constants/styles";
 import FixedButton from "../components/UI/FixedButton";
+import { getData } from "../util/http";
+import { useEffect } from "react";
 
 function CowsScreen() {
     const navigation = useNavigation();
     let title = 'Yeni məlumat';
+    function addCow() { navigation.navigate('Redaktə', { title }) }
 
-    function addCow() {
-        navigation.navigate('Redaktə', { title })
+    async function changeScreen(screen, name, tableName) {
+        let endpoint = 'cows/cows';
+        try {
+            const data = await getData(endpoint);
+            const filteredData = filterDataByType(data, name);
+            
+            navigation.navigate(screen, { data: filteredData, name   });
+        } catch (error) {
+            console.error(`Error changing screen to ${screen}:`, error);
+        }
     }
 
-    function changeScreen(screen, name, tableName) {
-        navigation.navigate(screen, { name, tableName });
-    }
+    function filterDataByType(data, type) { return data.filter(item => item.type === type) }
+
 
     return (
         <View style={{ flex: 1, marginHorizontal: 15 }}>
