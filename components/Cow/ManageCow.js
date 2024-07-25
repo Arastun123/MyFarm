@@ -7,22 +7,23 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Input from "../UI/Input";
 import Button from "../UI/Button";
 import RadioButton from "../UI/RadioButton";
-import { getFormatedDate } from "../../util/date";
 import { GlobalStyles } from "../../constants/styles";
 import Dropdown from "../UI/Dropdown";
-import { addData } from "../../util/http";
-import axios from "axios";
+import { addData, deleteData } from "../../util/http";
 
 const { width, height } = Dimensions.get('window');
 
 function ManageCow({ route }) {
-    const { id, defaultValue, title, tableName, name } = route.params;
+    const { id, defaultValue, title, name, mode } = route.params;
 
-    const [selectedGender, setSelectedGender] = useState('');
-    const [selectGetWay, setSelectGetWay] = useState('');
+    const [selectedGender, setSelectedGender] = useState(defaultValue ? defaultValue.gender : '');
+    const [selectGetWay, setSelectGetWay] = useState(defaultValue ? defaultValue.how_get : '');
     const [showDropdown, setShowDropdown] = useState(false);
-    const [animalCategory, setAnimalCategory] = useState('');
-    const [userData, setUserData] = useState(null);
+    const [animalCategory, setAnimalCategory] = useState(defaultValue ? defaultValue.type : '');
+    const [userData, setUserData] = useState({ role: '', token: '', username: '' });
+
+    console.log(defaultValue);
+
     const [inputs, setInputs] = useState({
         bilka_number: {
             value: defaultValue ? defaultValue.bilka_number.toString() : '',
@@ -93,7 +94,7 @@ function ManageCow({ route }) {
             isValid: true
         },
     });
-    
+
     function inputChangeHandler(inputIdentifier, enteredValue) {
         setInputs((curInputValues) => {
             return {
@@ -130,11 +131,13 @@ function ManageCow({ route }) {
             setUserData({ role, token, username });
         };
         loadUserData();
+
     })
 
     async function submitCow() {
         let endPoint = 'cows/add-cow';
         let data = {};
+
         try {
             if (inputs !== '') {
                 data = {
@@ -162,11 +165,19 @@ function ManageCow({ route }) {
                 };
 
                 const response = await addData(endPoint, data);
-                if (userData.role !== 'master_admin') {
-                    Alert.alert('Sizin sorğunuz Master Admin tərəfindən təsdiq edilməlidir')
+                if (response.status === 201) {
+                    if (userData.role !== 'master_admin') {
+                        Alert.alert('Sizin sorğunuz Master Admin tərəfindən təsdiq edilməlidir', response.message);
+                        if (mode === 'pending') {
+                            let pending = 'pendingOperation/deleteOperation';
+                            deleteData(id, pending);
+                        }
+                    } else {
+                        Alert.alert('', response.message);
+                    }
                 }
 
-                Alert.alert('Success', response.data.message);
+
             } else {
                 Alert.alert('Error', 'Please fill in all required fields.');
             }
@@ -176,10 +187,17 @@ function ManageCow({ route }) {
         }
     }
 
+    function deleteCow(id, name) {
+        let endPoint = 'cows/delete-cow';
 
-    function deleteCow(id) { }
-
-
+        deleteData(endPoint, id)
+            .then(response => {
+                Alert.alert('Success', response.message);
+            })
+            .catch(error => {
+                Alert.alert('Error', error.message);
+            });
+    }
 
     return (
         <>
@@ -349,16 +367,20 @@ function ManageCow({ route }) {
                             : <></>
 
                     }
-                    <Input
-                        label='Günlük süd miqdarı'
-                        textinputConfig={{
-                            placeholder: 'Litr',
-                            keyboardType: 'numeric',
-                            maxLength: 10,
-                            onChangeText: inputChangeHandler.bind(this, 'milk_quantity'),
-                            value: inputs.milk_quantity.value,
-                        }}
-                    />
+                    {
+                        selectedGender === 'Dişi' ?
+                            <Input
+                                label='Günlük süd miqdarı'
+                                textinputConfig={{
+                                    placeholder: 'Litr',
+                                    keyboardType: 'numeric',
+                                    maxLength: 4,
+                                    onChangeText: inputChangeHandler.bind(this, 'milk_quantity'),
+                                    value: inputs.milk_quantity.value,
+                                }}
+                            />
+                            : ''
+                    }
                     <Input
                         label='Vaksinlər'
                         textinputConfig={{
@@ -417,59 +439,74 @@ function ManageCow({ route }) {
                         }}
                     />
                     <View style={styles.radioButtonContainer}>
-                        <Button
-                            text='Təsdiq et'
-                            color={GlobalStyles.colors.primary800}
-                            onPress={submitCow}
-                        />
-                        {id === undefined ? '' :
+                        {mode === 'pending' && userData.role === 'master_admin' ? (
                             <>
                                 <Button
-                                    text='Sil'
-                                    color='red'
-                                    onPress={() => deleteCow(id)}
+                                    text='Təsdiq et'
+                                    color='green'
+                                    onPress={submitCow}
                                 />
-                                {showDropdown ?
-                                    <View style={styles.dropdonwBox}>
-                                        <Dropdown
-                                            text='Sat'
-                                            id={id}
-                                            tableName='sold'
-                                            status='satılıb'
-                                            onSelect={handleOptionSelect}
-                                        />
-                                        <Dropdown
-                                            text='Sağmal'
-                                            id={id}
-                                            tableName='sağmal'
-                                            status='sağılır'
-                                            onSelect={handleOptionSelect}
-                                        />
-                                        <Dropdown
-                                            text='Tələf olub'
-                                            id={id}
-                                            tableName='dead'
-                                            status='tələf olub'
-                                            onSelect={handleOptionSelect}
-                                        />
-                                        <Dropdown
-                                            text='Boğaz'
-                                            id={id}
-                                            tableName='boğaz'
-                                            status='boğaz'
-                                            onSelect={handleOptionSelect}
-                                        />
-                                    </View>
-                                    : ''
-                                }
                                 <Button
-                                    text={<FontAwesome name="exchange" size={24} color="white" />}
-                                    color={showDropdown ? GlobalStyles.colors.primary800 : 'green'}
-                                    onPress={() => { setShowDropdown(!showDropdown) }}
+                                    text='Ləğv et'
+                                    color='red'
+                                    onPress={() => deleteCow(id, 'pending')}
                                 />
                             </>
-                        }
+                        ) : (
+                            mode !== 'pending' && (
+                                <>
+                                    <Button
+                                        text='Ləğv et'
+                                        color='red'
+                                        onPress={() => deleteCow(id, 'pending')}
+                                    />
+                                    <Button
+                                        text='Sil'
+                                        color='red'
+                                        onPress={() => deleteCow(id, 'animal')}
+                                    />
+                                    {showDropdown && (
+                                        <View style={styles.dropdownBox}>
+                                            <Dropdown
+                                                text='Sat'
+                                                id={id}
+                                                tableName='sold'
+                                                status='satılıb'
+                                                onSelect={handleOptionSelect}
+                                            />
+                                            <Dropdown
+                                                text='Sağmal'
+                                                id={id}
+                                                tableName='sağmal'
+                                                status='sağılır'
+                                                onSelect={handleOptionSelect}
+                                            />
+                                            <Dropdown
+                                                text='Tələf olub'
+                                                id={id}
+                                                tableName='dead'
+                                                status='tələf olub'
+                                                onSelect={handleOptionSelect}
+                                            />
+                                            <Dropdown
+                                                text='Boğaz'
+                                                id={id}
+                                                tableName='boğaz'
+                                                status='boğaz'
+                                                onSelect={handleOptionSelect}
+                                            />
+                                        </View>
+                                    )}
+                                    <Button
+                                        text={<FontAwesome name="exchange" size={24} color="white" />}
+                                        color={showDropdown ? GlobalStyles.colors.primary800 : 'green'}
+                                        onPress={() => { setShowDropdown(!showDropdown) }}
+                                    />
+                                </>
+                            )
+                        )}
                     </View>
+
                 </ScrollView>
             </View>
         </>

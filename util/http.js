@@ -1,9 +1,9 @@
 import axios from "axios";
 
-let url = 'http://192.168.1.69:3000/';
+let mainURL = 'http://192.168.1.69:3000/';
 
 export async function getData(tableName) {
-    let endPoint = url + tableName;
+    let endPoint = mainURL + tableName;
     try {
         const response = await axios.get(endPoint);
         return response.data;
@@ -14,15 +14,15 @@ export async function getData(tableName) {
 }
 
 export async function addData(endPoint, data) {
-    let url = `${url} + ${endPoint}`;
+    let url = `${mainURL}${endPoint}`;
 
     try {
-        const response = await axios.post(endPoint, { data }, {
+        const response = await axios.post(url, data, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        return { status: response.status, message: response.status };
+        return { status: response.status, message: response.data.message }; 
 
     } catch (error) {
         if (error.response) {
@@ -36,7 +36,7 @@ export async function addData(endPoint, data) {
 }
 
 export async function updateData(endPoint, id, data) {
-    let url = `${url} + ${endPoint} + '/' + ${id}`;
+    let url = `${mainURL} + ${endPoint} + '/' + ${id}`;
     try {
         const response = await axios.put(url, { data });
         return { status: response.status, message: response.status };
@@ -53,11 +53,10 @@ export async function updateData(endPoint, id, data) {
 }
 
 export async function deleteData(endPoint, id) {
-    let url = `${url} + ${endPoint} + '/' + ${id}`;
+    let url = `${mainURL}${endPoint}/${id}`;
     try {
         const response = await axios.delete(url);
-        return { status: response.status, message: response.status };
-
+        return { status: response.status, message: response.data.message };
     } catch (error) {
         if (error.response) {
             return { status: error.response.status, message: error.response.data.message };
@@ -66,6 +65,5 @@ export async function deleteData(endPoint, id) {
         } else {
             return { status: null, message: error.message };
         }
-
     }
 }

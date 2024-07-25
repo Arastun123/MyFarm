@@ -42,10 +42,11 @@ function CategoryCowScreen({ route }) {
         }
     }
 
+    let defaultValue = data
+
     function addCow() {
-        navigation.navigate('Redaktə', { screenTitle, tableName, name })
+        navigation.navigate('Redaktə', { screenTitle, defaultValue, tableName, name })
     }
-    console.log(data);
 
     return (
         <View style={styles.container}>
@@ -70,12 +71,12 @@ function CategoryCowScreen({ route }) {
                         <FlatListItem
                             id={item.id}
                             name={item.name}
-                            category={item.type} 
-                            age={item.age} 
-                            health={item.health_status} 
+                            category={item.type}
+                            age={item.age}
+                            health={item.health_status}
                         />
                     )}
-                    keyExtractor={(item) => item.id.toString()} 
+                    keyExtractor={(item) => item.id.toString()}
                     showsVerticalScrollIndicator={false}
                 />
             </View>

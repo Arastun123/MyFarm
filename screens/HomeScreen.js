@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     },
     cardContainer: {
         width: '45%',
-        height: 120,
+        height: 160,
         margin: 10,
         padding: 5,
         borderRadius: 2,
