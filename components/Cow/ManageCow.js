@@ -1,5 +1,5 @@
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, AntDesign } from '@expo/vector-icons';
 import { useEffect, useState } from "react";
 import { Dimensions } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,24 +9,24 @@ import Button from "../UI/Button";
 import RadioButton from "../UI/RadioButton";
 import { GlobalStyles } from "../../constants/styles";
 import Dropdown from "../UI/Dropdown";
-import { addData, deleteData } from "../../util/http";
+import { addData, deleteData, updateData } from "../../util/http";
+import { useNavigation } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get('window');
 
 function ManageCow({ route }) {
-    const { id, defaultValue, title, name, mode } = route.params;
+    const { id, defaultValue, title, name, mode, pendingId, operationType } = route.params;
+    const navigation = useNavigation();
 
     const [selectedGender, setSelectedGender] = useState(defaultValue ? defaultValue.gender : '');
     const [selectGetWay, setSelectGetWay] = useState(defaultValue ? defaultValue.how_get : '');
     const [showDropdown, setShowDropdown] = useState(false);
     const [animalCategory, setAnimalCategory] = useState(defaultValue ? defaultValue.type : '');
     const [userData, setUserData] = useState({ role: '', token: '', username: '' });
-
-    console.log(defaultValue);
-
+    const [inputCount, setInputCount] = useState(1);
     const [inputs, setInputs] = useState({
         bilka_number: {
-            value: defaultValue ? defaultValue.bilka_number.toString() : '',
+            value: defaultValue ? defaultValue.bilka_number : '',
             isValid: true
         },
         name: {
@@ -34,7 +34,7 @@ function ManageCow({ route }) {
             isValid: true
         },
         weight: {
-            value: defaultValue ? defaultValue.weight.toString() : '',
+            value: defaultValue ? defaultValue.weight : '',
             isValid: true
         },
         date: {
@@ -46,7 +46,7 @@ function ManageCow({ route }) {
             isValid: true
         },
         milk_quantity: {
-            value: defaultValue ? defaultValue.milk_quantity.toString() : '',
+            value: defaultValue ? defaultValue.milk_quantity : '',
             isValid: true
         },
         vaccine: {
@@ -65,12 +65,12 @@ function ManageCow({ route }) {
             value: defaultValue ? defaultValue.mother_bilka : '',
             isValid: true
         },
-        father_bilka: {
-            value: defaultValue ? defaultValue.father_bilka : '',
-            isValid: true
-        },
         insemination_date: {
             value: defaultValue ? defaultValue.insemination_date : '',
+            isValid: true
+        },
+        birth_dates: {
+            value: defaultValue ? defaultValue.birth_dates : '',
             isValid: true
         },
         getFrom: {
@@ -79,6 +79,10 @@ function ManageCow({ route }) {
         },
         child_id: {
             value: defaultValue ? defaultValue.child_id : '',
+            isValid: true
+        },
+        child_count: {
+            value: defaultValue ? defaultValue.child_count : '',
             isValid: true
         },
         last_checkup_date: {
@@ -121,8 +125,11 @@ function ManageCow({ route }) {
     };
 
     useEffect(() => {
-        name !== undefined ? setAnimalCategory(name) : ''
-        animalCategory === 'İnək' ? setSelectedGender('Dişi') : ''
+        if (defaultValue !== undefined) {
+
+            name !== undefined ? setAnimalCategory(name) : ''
+            animalCategory === 'İnək' ? setSelectedGender('Dişi') : ''
+        }
 
         const loadUserData = async () => {
             const role = await AsyncStorage.getItem('role');
@@ -135,8 +142,9 @@ function ManageCow({ route }) {
     })
 
     async function submitCow() {
-        let endPoint = 'cows/add-cow';
+        let endPoint = `${animalCategory}/add-${animalCategory}`;
         let data = {};
+        let response = '';
 
         try {
             if (inputs !== '') {
@@ -151,7 +159,6 @@ function ManageCow({ route }) {
                     vaccine: inputs.vaccine.value,
                     illness: inputs.illness.value,
                     mother_bilka: inputs.mother_bilka.value,
-                    father_bilka: inputs.father_bilka.value,
                     insemination_date: inputs.insemination_date.value,
                     how_get: selectGetWay,
                     get_from: inputs.getFrom.value,
@@ -160,12 +167,43 @@ function ManageCow({ route }) {
                     last_checkup_date: inputs.last_checkup_date.value,
                     health_status: inputs.health_status.value,
                     diet: inputs.diet.value,
+                    birth_dates: inputs.birth_dates.value,
+                    child_count: inputs.child_count.value,
                     username: userData.username,
                     role: userData.role,
                 };
+                if (mode === undefined) {
+                    if (id === undefined) {
+                        endPoint = `${animalCategory}/add-${animalCategory}`;
+                        response = await addData(endPoint, data);
+                        console.log('add');
+                    } else {
+                        const integerId = parseInt(id, 10);
+                        endPoint = `${animalCategory}/update-${animalCategory}`;
+                        response = await updateData(endPoint, integerId, data);
+                        console.log('update');
 
-                const response = await addData(endPoint, data);
+                    }
+                }
+                else if (mode === 'pending') {
+                    if (operationType === 'add') {
+                        endPoint = `${animalCategory}/add-${animalCategory}`;
+                        response = await addData(endPoint, data);
+                        console.log('pending');
+                    }
+                    else {
+                        const integerId = parseInt(id, 10);
+                        endPoint = `${animalCategory}/update-${animalCategory}`;
+                        response = await updateData(endPoint, integerId, data);
+                        console.log('not pending');
+
+                    }
+                    deleteCow(pendingId);
+                }
+
+
                 if (response.status === 201) {
+                    navigation.navigate('Heyvanlar');
                     if (userData.role !== 'master_admin') {
                         Alert.alert('Sizin sorğunuz Master Admin tərəfindən təsdiq edilməlidir', response.message);
                         if (mode === 'pending') {
@@ -176,8 +214,9 @@ function ManageCow({ route }) {
                         Alert.alert('', response.message);
                     }
                 }
-
-
+                else {
+                    Alert.alert('Xəta', response.message);
+                }
             } else {
                 Alert.alert('Error', 'Please fill in all required fields.');
             }
@@ -187,16 +226,38 @@ function ManageCow({ route }) {
         }
     }
 
-    function deleteCow(id, name) {
-        let endPoint = 'cows/delete-cow';
+    async function deleteCow(id, name) {
+        let endPoint = 'cow/delete-cow';
+        if (mode === '') {
 
-        deleteData(endPoint, id)
-            .then(response => {
-                Alert.alert('Success', response.message);
-            })
-            .catch(error => {
-                Alert.alert('Error', error.message);
-            });
+            const response = await deleteData(endPoint, id);
+            if (response.status === 200) {
+                Alert.alert('Məlumat silindi');
+                navigation.navigate('Heyvanlar');
+            }
+            else {
+                Alert.alert('Xəta', response.message);
+            }
+        }
+        else {
+            endPoint = 'pendingOperation/deleteOperation/';
+            deleteData(endPoint, pendingId);
+            navigation.navigate('Gözləmə');
+        }
+
+
+    }
+
+    function handleInputs(type) {
+        setInputCount((prevCount) => {
+            if (type === '+1') {
+                return prevCount + 1;
+            } else if (type === '-1' && prevCount > 1) {
+                return prevCount - 1;
+            } else {
+                return prevCount;
+            }
+        });
     }
 
     return (
@@ -233,54 +294,94 @@ function ManageCow({ route }) {
                     <View style={styles.radioButtonContainer}>
                         <RadioButton
                             text='İnək'
-                            selected={animalCategory === 'İnək'}
+                            selected={animalCategory === 'cow'}
                             onSelect={() => {
-                                setAnimalCategory('İnək')
+                                setAnimalCategory('cow')
                             }}
                         />
                         <RadioButton
                             text='Gənc'
-                            selected={animalCategory === 'Gənc'}
+                            selected={animalCategory === 'younge'}
                             onSelect={() => {
-                                setAnimalCategory('Gənc')
+                                setAnimalCategory('younge')
                             }}
                         />
                         <RadioButton
                             text='Buzov'
-                            selected={animalCategory === 'Buzov'}
+                            selected={animalCategory === 'calf'}
                             onSelect={() => {
-                                setAnimalCategory('Buzov')
+                                setAnimalCategory('calf')
                             }}
                         />
                     </View>
                     {
-                        animalCategory === 'İnək' ? '' :
-                            <View style={styles.radioButtonContainer}>
-                                <RadioButton
-                                    text='Erkək'
-                                    selected={selectedGender === 'Erkək'}
-                                    onSelect={() => {
-                                        setSelectedGender('Erkək')
-                                    }}
-                                />
-                                <RadioButton
-                                    text='Dişi'
-                                    selected={selectedGender === 'Dişi'}
-                                    onSelect={() => {
-                                        setSelectedGender('Dişi')
-                                    }}
-                                />
+                        animalCategory === 'cow' ?
+
+                            <View>
+                                <View style={styles.radioButtonContainer}>
+                                    <Button
+                                        text={<AntDesign name="plus" size={24} color="white" />}
+                                        color={showDropdown ? GlobalStyles.colors.primary800 : 'green'}
+                                        onPress={() => { handleInputs('+1') }}
+                                    />
+                                    <Button
+                                        text={<AntDesign name="minus" size={24} color="white" />}
+                                        color={showDropdown ? GlobalStyles.colors.primary800 : 'green'}
+                                        onPress={() => { handleInputs('-1') }}
+                                    />
+                                </View>
+                                {[...Array(inputCount)].map((_, index) => (
+                                    <View key={index}>
+                                        <Input
+                                            label={`Mayalanma Tarix ${index + 1}`}
+                                            textinputConfig={{
+                                                placeholder: 'İl-ay-gün',
+                                                maxLength: 10,
+                                                onChangeText: inputChangeHandler.bind(this, `insemination_date_${index + 1}`),
+                                                value: inputs[`insemination_date_${index + 1}`]?.value || '',
+                                            }}
+                                        />
+                                        <Input
+                                            label={`Doğum Tarix ${index + 1}`}
+                                            textinputConfig={{
+                                                placeholder: 'İl-ay-gün',
+                                                maxLength: 10,
+                                                onChangeText: inputChangeHandler.bind(this, `birth_dates_${index + 1}`),
+                                                value: inputs[`birth_dates_${index + 1}`]?.value || '',
+                                            }}
+                                        />
+                                    </View>
+                                ))}
                             </View>
+                            :
+                            <>
+                                <View style={styles.radioButtonContainer}>
+                                    <RadioButton
+                                        text='Erkək'
+                                        selected={selectedGender === 'Erkək'}
+                                        onSelect={() => {
+                                            setSelectedGender('Erkək')
+                                        }}
+                                    />
+                                    <RadioButton
+                                        text='Dişi'
+                                        selected={selectedGender === 'Dişi'}
+                                        onSelect={() => {
+                                            setSelectedGender('Dişi')
+                                        }}
+                                    />
+                                </View>
+                                <Input
+                                    label="Doğum Tarix"
+                                    textinputConfig={{
+                                        placeholder: 'İl-ay-gün',
+                                        maxLength: 10,
+                                        onChangeText: inputChangeHandler.bind(this, 'birthdate'),
+                                        value: inputs.birthdate.value,
+                                    }}
+                                />
+                            </>
                     }
-                    <Input
-                        label="Doğum Tarix"
-                        textinputConfig={{
-                            placeholder: 'İl-ay-gün',
-                            maxLength: 10,
-                            onChangeText: inputChangeHandler.bind(this, 'birthdate'),
-                            value: inputs.birthdate.value,
-                        }}
-                    />
                     <View style={styles.radioButtonContainer}>
                         <RadioButton
                             text='Süni Mayalanma'
@@ -305,7 +406,7 @@ function ManageCow({ route }) {
                         />
                     </View>
                     {
-                        selectGetWay === 'Təbii Mayalanma' ?
+                        selectGetWay !== 'Alınıb' ?
                             <>
                                 <Input
                                     label='Anasının bilka nömrəsi'
@@ -316,19 +417,10 @@ function ManageCow({ route }) {
                                     }}
                                 />
 
-                                <Input
-                                    label='Atasının bilka nömrəsi'
-                                    textinputConfig={{
-                                        maxLength: 10,
-                                        onChangeText: inputChangeHandler.bind(this, 'father_bilka'),
-                                        value: inputs.father_bilka.value,
-                                    }}
-                                />
                             </>
                             : <></>
 
                     }
-
                     {
                         selectGetWay === 'Süni Mayalanma' ?
                             <>
@@ -339,14 +431,6 @@ function ManageCow({ route }) {
                                         maxLength: 10,
                                         onChangeText: inputChangeHandler.bind(this, 'insemination_date'),
                                         value: inputs.insemination_date.value,
-                                    }}
-                                />
-                                <Input
-                                    label='Anasının bilka nömrəsi'
-                                    textinputConfig={{
-                                        maxLength: 10,
-                                        onChangeText: inputChangeHandler.bind(this, 'mother_bilka'),
-                                        value: inputs.mother_bilka.value,
                                     }}
                                 />
                             </>
@@ -368,7 +452,7 @@ function ManageCow({ route }) {
 
                     }
                     {
-                        selectedGender === 'Dişi' ?
+                        selectedGender === 'Dişi' || animalCategory === 'cow' ?
                             <Input
                                 label='Günlük süd miqdarı'
                                 textinputConfig={{
@@ -438,27 +522,51 @@ function ManageCow({ route }) {
                             value: inputs.diet.value,
                         }}
                     />
+                    {/* <Input
+                        label='Uşaqlarının sayı'
+                        textinputConfig={{
+                            keyboardType: 'numeric',
+                            onChangeText: inputChangeHandler.bind(this, 'child_count'),
+                            value: inputs.child_count.value,
+                        }}
+                    /> */}
                     <View style={styles.radioButtonContainer}>
-                        {mode === 'pending' && userData.role === 'master_admin' ? (
-                            <>
+                        {mode === 'pending' && userData.role === 'master_admin' &&
+                            (
+                                <>
+                                    <Button
+                                        text='Təsdiq et'
+                                        color='green'
+                                        onPress={submitCow}
+                                    />
+                                    <Button
+                                        text='Ləğv et'
+                                        color='red'
+                                        onPress={() => deleteCow(id, 'pending')}
+                                    />
+                                </>
+                            )
+                        }
+
+                        {
+                            mode !== 'pending' && id === undefined &&
+                            (
                                 <Button
                                     text='Təsdiq et'
                                     color='green'
                                     onPress={submitCow}
                                 />
-                                <Button
-                                    text='Ləğv et'
-                                    color='red'
-                                    onPress={() => deleteCow(id, 'pending')}
-                                />
-                            </>
-                        ) : (
-                            mode !== 'pending' && (
+                            )
+                        }
+
+                        {
+                            mode !== 'pending' && id !== undefined &&
+                            (
                                 <>
                                     <Button
-                                        text='Ləğv et'
-                                        color='red'
-                                        onPress={() => deleteCow(id, 'pending')}
+                                        text='Təsdiq et'
+                                        color='green'
+                                        onPress={submitCow}
                                     />
                                     <Button
                                         text='Sil'
@@ -466,7 +574,7 @@ function ManageCow({ route }) {
                                         onPress={() => deleteCow(id, 'animal')}
                                     />
                                     {showDropdown && (
-                                        <View style={styles.dropdownBox}>
+                                        <View style={styles.dropdonwBox}>
                                             <Dropdown
                                                 text='Sat'
                                                 id={id}
@@ -504,7 +612,7 @@ function ManageCow({ route }) {
                                     />
                                 </>
                             )
-                        )}
+                        }
                     </View>
 
                 </ScrollView>

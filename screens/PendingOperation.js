@@ -1,19 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { GlobalStyles } from "../constants/styles";
 import { getData } from "../util/http";
+import { formatDate } from "../util/date";
 
-function FlatListItem({ id, name, status, date, user, operationData }) {
+function FlatListItem({ id, name, status, date, operationData }) {
     const navigation = useNavigation();
-    
+
     let title = 'Gözləmədə olan əməliyat';
-    let mode = 'pending'
-    let defaultValue = JSON.parse(operationData[0].data)
+    let mode = 'pending';
+    let defaultValue = JSON.parse(operationData[0].data);
+    let pendingId = operationData[0].id;
+    let operationType = operationData[0].operation_type;
+
     function showSelecetedOperation(id) {
-        navigation.navigate('Redaktə', { id, defaultValue, title, mode })
+        navigation.navigate('Redaktə', { id, defaultValue, title, mode, pendingId, operationType });
     }
+
     return (
         <Pressable
             style={({ pressed }) => pressed && styles.press}
@@ -23,22 +28,19 @@ function FlatListItem({ id, name, status, date, user, operationData }) {
                 <View>
                     <Text style={styles.textBase}>{name}</Text>
                     <Text style={styles.textBase}>{status}</Text>
-                </View>
-                <View>
-                    <Text style={styles.textBase}>{date.slice(0, 10)}</Text>
-                    <Text style={styles.textBase}>{user}</Text>
+                    <Text style={styles.textBase}>{formatDate(date)}</Text>
                 </View>
             </View>
         </Pressable>
-    )
+    );
 }
 
-function PendingOperation({ }) {
+function PendingOperation() {
     const [resData, setResData] = useState([]);
 
     useEffect(() => {
-        getOperations()
-    })
+        getOperations();
+    }, []);
 
     async function getOperations() {
         let endpoint = 'pendingOperation/getOperation';
@@ -46,32 +48,39 @@ function PendingOperation({ }) {
             const data = await getData(endpoint);
             setResData(data);
         } catch (error) {
-            console.error(`Error`, error);
+            console.error('Error', error);
         }
     }
 
     return (
         <View style={styles.container}>
-
-            <View style={styles.flatContainer}>
-                <FlatList
-                    data={resData}
-                    renderItem={({ item }) => (
-                        <FlatListItem
-                            id={item.id}
-                            name={item.name}
-                            status={item.status}
-                            date={item.created_at}
-                            user={item.requested_by}
-                            operationData={resData}
-                        />
-                    )}
-                    keyExtractor={(item) => item.id.toString()}
-                    showsVerticalScrollIndicator={false}
-                />
-            </View>           
+            {resData.length === 0 ? (
+                <>
+                    <Text style={styles.title}>Gözləmədə olan əməliyyat yoxdur...</Text>
+                </>
+            ) : (
+                <View style={styles.flatContainer}>
+                    <FlatList
+                        data={resData}
+                        renderItem={({ item }) => {
+                            let data = JSON.parse(item.data);
+                            return (
+                                <FlatListItem
+                                    id={data.id}
+                                    name={item.operationName}
+                                    status={item.status}
+                                    date={item.created_at}
+                                    operationData={resData}
+                                />
+                            );
+                        }}
+                        keyExtractor={(item) => item.id.toString()}
+                        showsVerticalScrollIndicator={false}
+                    />
+                </View>
+            )}
         </View>
-    )
+    );
 }
 
 export default PendingOperation;
@@ -110,6 +119,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     item: {
+        height: 150,
         padding: 12,
         marginVertical: 8,
         backgroundColor: GlobalStyles.colors.primary500,
@@ -126,5 +136,12 @@ const styles = StyleSheet.create({
         color: GlobalStyles.colors.primary100,
         fontSize: 14,
     },
-    press: { opacity: 0.75 }
+    press: { opacity: 0.75 },
+    title: {
+        color: GlobalStyles.colors.primary800,
+        textAlign: 'center',
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    }
 });

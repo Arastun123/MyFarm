@@ -15,7 +15,6 @@ export async function getData(tableName) {
 
 export async function addData(endPoint, data) {
     let url = `${mainURL}${endPoint}`;
-
     try {
         const response = await axios.post(url, data, {
             headers: {
@@ -36,10 +35,10 @@ export async function addData(endPoint, data) {
 }
 
 export async function updateData(endPoint, id, data) {
-    let url = `${mainURL} + ${endPoint} + '/' + ${id}`;
+    let url = `${mainURL}${endPoint}/${id}`;
     try {
-        const response = await axios.put(url, { data });
-        return { status: response.status, message: response.status };
+        const response = await axios.put(url, data);
+        return { status: response.status, message: response.message };
     } catch (error) {
         if (error.response) {
             return { status: error.response.status, message: error.response.data.message };
@@ -49,13 +48,14 @@ export async function updateData(endPoint, id, data) {
             return { status: null, message: error.message };
         }
     }
-
 }
 
+
 export async function deleteData(endPoint, id) {
-    let url = `${mainURL}${endPoint}/${id}`;
+    let url = `${mainURL}${endPoint}${id}`;
     try {
         const response = await axios.delete(url);
+        console.log(response);
         return { status: response.status, message: response.data.message };
     } catch (error) {
         if (error.response) {

@@ -5,26 +5,15 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { GlobalStyles } from "../constants/styles";
 import FixedButton from "../components/UI/FixedButton";
 import { getData } from "../util/http";
-import { useEffect } from "react";
 
 function CowsScreen() {
     const navigation = useNavigation();
     let title = 'Yeni məlumat';
     function addCow() { navigation.navigate('Redaktə', { title }) }
 
-    async function changeScreen(screen, name, tableName) {
-        let endpoint = 'cows/cows';
-        try {
-            const data = await getData(endpoint);
-            const filteredData = filterDataByType(data, name);
-            
-            navigation.navigate(screen, { data: filteredData, name   });
-        } catch (error) {
-            console.error(`Error changing screen to ${screen}:`, error);
-        }
+    function changeScreen(screen, name, tableName) {
+        navigation.navigate(screen, { name, tableName });
     }
-
-    function filterDataByType(data, type) { return data.filter(item => item.type === type) }
 
 
     return (
@@ -36,7 +25,7 @@ function CowsScreen() {
                             styles.cardContainer,
                             pressed && styles.press
                         ]}
-                        onPress={() => changeScreen('Heyvan', 'İnək', 'cows')}
+                        onPress={() => changeScreen('Heyvan', 'İnək', 'cow')}
                     >
                         <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
                         <Text style={styles.cardTitle}>İnəklər</Text>
@@ -46,7 +35,7 @@ function CowsScreen() {
                             styles.cardContainer,
                             pressed && styles.press
                         ]}
-                        onPress={() => changeScreen('Heyvan', 'Buzov', 'buzov')}
+                        onPress={() => changeScreen('Heyvan', 'Buzov', 'calf')}
                     >
                         <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
                         <Text style={styles.cardTitle}>Buzovlar</Text>

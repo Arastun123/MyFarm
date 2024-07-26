@@ -3,112 +3,14 @@ import { Pressable, Text, View, StyleSheet } from "react-native";
 import { GlobalStyles } from "../../constants/styles";
 import { useNavigation } from "@react-navigation/native";
 
-const cows = [
-    {
-        id: '1', name: 'Bessie', categories: ['inək', 'xəstə'], age: 4, health: 'Healthy', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '2', name: 'Molly', categories: ['düyə'], age: 2, health: 'Healthy', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '3', name: 'Daisy', categories: ['boğaz'], age: 5, health: 'Pregnant', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '4', name: 'Duke', categories: ['erkək'], age: 3, health: 'Healthy', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '5', name: 'Bella', categories: ['dişi', 'sağmal'], age: 6, health: 'Healthy', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '6', name: 'Lucy', categories: ['sağmal'], age: 7, health: 'Healthy', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '7', name: 'Lola', categories: ['xəstə'], age: 8, health: 'Sick', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '8', name: 'Sam', categories: ['subay', 'buzov'], age: 4, health: 'Healthy', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '9', name: 'Cek', categories: ['inək'], age: 4, health: 'Healthy', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '10', name: 'Me', categories: ['düyə'], age: 2, health: 'Healthy', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '11', name: 'Daisy', categories: ['boğaz'], age: 5, health: 'Pregnant', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '12', name: 'Duke', categories: ['erkək'], age: 3, health: 'Healthy', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '13', name: 'Bella', categories: ['dişi'], age: 6, health: 'Healthy', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '14', name: 'Lucy', categories: ['sağmal'], age: 7, health: 'Healthy', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '15', name: 'Lola', categories: ['xəstə'], age: 8, health: 'Sick', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-    {
-        id: '16', name: 'Sam', categories: ['subay'], age: 4, health: 'Healthy', number: '',
-        weight: '', date: '2024-07-14', enteredDate: '2024-07-14', milk: '', vaccine: '',
-        illnes: '', info: '', motherBilka: '', fatherBilka: '', mayalanmatarixi: '',
-        buyDate: '', getFrom: ''
-    },
-];
-
-function FlatListItem({ id, name, category, age, health }) {
+function FlatListItem({ id, name, gender, birthdate, health, data }) {
     const navigation = useNavigation();
     let title = 'Redaktə';
     function showSelecetedCow(id) {
-        const defaultValue = cows.find((item) => item.id === id);
+        const defaultValue = data.find((item) => item.id === id);
         navigation.navigate('Redaktə', { id, defaultValue, title })
     }
+    
     return (
         <Pressable
             style={({ pressed }) => pressed && styles.press}
@@ -116,12 +18,12 @@ function FlatListItem({ id, name, category, age, health }) {
         >
             <View style={styles.item}>
                 <View>
-                    <Text style={styles.textBase}>{name}</Text>
-                    <Text style={styles.textBase}>{category}</Text>
+                    <Text style={styles.textBase}>Bilka nömrəsi : {name}</Text>
+                    <Text style={styles.textBase}>Cinsi : {gender}</Text>
                 </View>
                 <View>
-                    <Text style={styles.textBase}>{age}</Text>
-                    <Text style={styles.textBase}>{health}</Text>
+                    <Text style={styles.textBase}>Doğum tarixi : {birthdate}</Text>
+                    <Text style={styles.textBase}>Sağlamlıq:  {health}</Text>
                 </View>
             </View>
         </Pressable>
