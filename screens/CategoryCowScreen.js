@@ -21,12 +21,12 @@ function CategoryCowScreen({ route }) {
     useEffect(() => {
         getCategoryAnimal();
     }, []);
-
+    
     async function getCategoryAnimal() {
         let url = `${tableName}/${tableName}s`
         try {
             const data = await getData(url)
-            setResData(data);
+            setResData(data.reverse());
         } catch (error) {
             console.error('Error:', error);
         }
@@ -80,7 +80,7 @@ function CategoryCowScreen({ route }) {
 
             {resData.length === 0 ?
                 <>
-                    <Text style={styles.title}>Gözləmədə olan əməliyyat yoxdur...</Text>
+                    <Text style={styles.title}>Daxil edilmiş məlumat yoxdur...</Text>
                 </> :
                 <>
                     <Text style={styles.text}>Toplam {name} sayı: {resData.length.toString()}</Text>
@@ -91,7 +91,7 @@ function CategoryCowScreen({ route }) {
                             renderItem={({ item }) => (
                                 <FlatListItem
                                     id={item.id}
-                                    name={item.name}
+                                    bilka_number={item.bilka_number}
                                     gender={item.gender}
                                     birthdate={item.birthdate}
                                     health={item.health_status}

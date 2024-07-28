@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     inputMultiline: {
-        minHeight: 100,
+        minHeight: 150,
         textAlignVertical: 'top'
     },
     invalidLabel: {

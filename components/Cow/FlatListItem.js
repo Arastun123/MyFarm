@@ -3,14 +3,14 @@ import { Pressable, Text, View, StyleSheet } from "react-native";
 import { GlobalStyles } from "../../constants/styles";
 import { useNavigation } from "@react-navigation/native";
 
-function FlatListItem({ id, name, gender, birthdate, health, data }) {
+function FlatListItem({ id, bilka_number, gender, birthdate, health, data }) {
     const navigation = useNavigation();
     let title = 'Redaktə';
     function showSelecetedCow(id) {
         const defaultValue = data.find((item) => item.id === id);
         navigation.navigate('Redaktə', { id, defaultValue, title })
     }
-    
+
     return (
         <Pressable
             style={({ pressed }) => pressed && styles.press}
@@ -18,11 +18,11 @@ function FlatListItem({ id, name, gender, birthdate, health, data }) {
         >
             <View style={styles.item}>
                 <View>
-                    <Text style={styles.textBase}>Bilka nömrəsi : {name}</Text>
+                    <Text style={styles.textBase}>Bilka nömrəsi : {bilka_number}</Text>
                     <Text style={styles.textBase}>Cinsi : {gender}</Text>
                 </View>
                 <View>
-                    <Text style={styles.textBase}>Doğum tarixi : {birthdate}</Text>
+                    <Text style={styles.textBase}>Doğum tarixi : {birthdate ? new Date(birthdate).toISOString().slice(0, 10) : ''}</Text>
                     <Text style={styles.textBase}>Sağlamlıq:  {health}</Text>
                 </View>
             </View>
