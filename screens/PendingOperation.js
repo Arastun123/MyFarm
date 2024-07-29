@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useEffect, useState, useCallback } from "react";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { GlobalStyles } from "../constants/styles";
@@ -35,13 +35,14 @@ function FlatListItem({ id, name, status, date, operationData }) {
     );
 }
 
-function PendingOperation() {
+function PendingOperation({ navigation }) {
     const [resData, setResData] = useState([]);
 
-    useEffect(() => {
-        getOperations();
-    }, []);
-
+    useFocusEffect(
+        useCallback(() => {
+            getOperations();
+        }, [])
+    );
     async function getOperations() {
         let endpoint = 'pendingOperation/getOperation';
         try {
@@ -51,6 +52,7 @@ function PendingOperation() {
             console.error('Error', error);
         }
     }
+
 
     return (
         <View style={styles.container}>

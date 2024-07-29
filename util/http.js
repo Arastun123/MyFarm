@@ -21,7 +21,7 @@ export async function addData(endPoint, data) {
                 'Content-Type': 'application/json'
             }
         });
-        return { status: response.status, message: response.data.message }; 
+        return { status: response.status, message: response.data.message };
 
     } catch (error) {
         if (error.response) {
@@ -38,7 +38,7 @@ export async function updateData(endPoint, id, data) {
     let url = `${mainURL}${endPoint}/${id}`;
     try {
         const response = await axios.put(url, data);
-        return { status: response.status, message: response.message };
+        return { status: response.status, message: response.data.message };
     } catch (error) {
         if (error.response) {
             return { status: error.response.status, message: error.response.data.message };
@@ -51,11 +51,11 @@ export async function updateData(endPoint, id, data) {
 }
 
 
-export async function deleteData(endPoint, id) {
-    let url = `${mainURL}${endPoint}${id}`;
+export async function deleteData(endPoint, id, data) {
+    let url = `${mainURL}${endPoint}/${id}`;
+    console.log(url);
     try {
-        const response = await axios.delete(url);
-        console.log(response);
+        const response = await axios.delete(url, { data });
         return { status: response.status, message: response.data.message };
     } catch (error) {
         if (error.response) {

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useEffect, useState, useCallback } from "react";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { GlobalStyles } from "../constants/styles";
@@ -8,7 +8,7 @@ import FixedButton from "../components/UI/FixedButton";
 import { getData } from "../util/http";
 
 
-function CategoryCowScreen({ route }) {
+function CategoryCowScreen({ route, navigate }) {
     const [filteredCows, setFilteredCows] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [resData, setResData] = useState([]);
@@ -17,10 +17,11 @@ function CategoryCowScreen({ route }) {
     let categoriesCount = {};
 
     const { name, tableName } = route.params;
-
-    useEffect(() => {
-        getCategoryAnimal();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            getCategoryAnimal();
+        }, [])
+    );
     
     async function getCategoryAnimal() {
         let url = `${tableName}/${tableName}s`

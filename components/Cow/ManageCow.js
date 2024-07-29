@@ -34,7 +34,7 @@ function ManageCow({ route }) {
 
     const [inputs, setInputs] = useState({
         bilka_number: {
-            value: defaultValue ? defaultValue.bilka_number.toString() : 0,
+            value: defaultValue ? defaultValue.bilka_number : 0,
             isValid: true
         },
         name: {
@@ -75,7 +75,6 @@ function ManageCow({ route }) {
         },
     });
 
-    // console.log(defaultValue);
 
     function inputChangeHandler(inputIdentifier, enteredValue) {
         setInputs((curInputValues) => {
@@ -117,7 +116,15 @@ function ManageCow({ route }) {
         };
         loadUserData();
 
-    })
+        if (defaultValue?.insemination_dates) {
+            const parsedInseminationDates = JSON.parse(defaultValue.insemination_dates);
+            setInseminationData(parsedInseminationDates.map(data => ({
+                insemination_date: data.insemination_date || '',
+                birth_dates: data.birth_dates || '',
+                birth_info: data.birth_info || ''
+            })));
+        }
+    }, defaultValue)
 
     async function submitCow() {
         let endPoint = `${animalCategory}/add-${animalCategory}`;
@@ -169,26 +176,50 @@ function ManageCow({ route }) {
         }
     }
 
-    async function deleteCow(id, name) {
+    async function deleteCow(id) {
         let endPoint = 'cow/delete-cow';
-        if (mode === '') {
+        let role = userData.role;
+        const data = {
+            bilka_number: inputs.bilka_number.value,
+            name: inputs.name.value,
+            weight: inputs.weight.value,
+            gender: selectedGender,
+            birthdate: inputs.birthdate.value,
+            type: animalCategory,
+            mother_bilka: inputs.mother_bilka.value,
+            insemination_data: inseminationData,
+            how_get: selectGetWay,
+            get_from: inputs.getFrom.value,
+            other_info: inputs.other_info.value,
+            last_checkup_date: inputs.last_checkup_date.value,
+            child_count: inseminationData.length,
+            username: userData.username,
+            role: userData.role,
+        };
 
-            const response = await deleteData(endPoint, id);
-            if (response.status === 200) {
-                Alert.alert('Məlumat silindi');
-                navigation.navigate('Heyvanlar');
+        try {
+            let response = ''
+            if (mode === 'pending') {
+                endPoint = 'pendingOperation/deleteOperation';
+                response = await deleteData(endPoint, pendingId, data);
             }
             else {
+                response = await deleteData(endPoint, id, data);
+            }
+
+            if (response.status === 200) {
+                Alert.alert('Məlumat silindi');
+                navigation.navigate('Heyvanlar', { refresh: true });
+            } else if (response.status === 201) {
+                Alert.alert('Operation pending approval');
+                navigation.navigate('Gözləmə', { refresh: true });
+            } else {
                 Alert.alert('Xəta', response.message);
             }
+        } catch (error) {
+            console.error('Error deleting cow:', error);
+            Alert.alert('Xəta', 'An error occurred while deleting the cow.');
         }
-        else {
-            endPoint = 'pendingOperation/deleteOperation/';
-            deleteData(endPoint, pendingId);
-            navigation.navigate('Gözləmə');
-        }
-
-
     }
 
     const addInseminationDate = () => {
@@ -202,9 +233,9 @@ function ManageCow({ route }) {
     };
 
     const handleInputChange = (index, field, value) => {
-        const updatedData = [...inseminationData];
-        updatedData[index][field] = value;
-        setInseminationData(updatedData);
+        const newData = [...inseminationData];
+        newData[index][field] = value;
+        setInseminationData(newData);
     };
 
 
@@ -219,7 +250,7 @@ function ManageCow({ route }) {
                         label='Bilka nomresi'
                         textinputConfig={{
                             onChangeText: inputChangeHandler.bind(this, 'bilka_number'),
-                            value: inputs.bilka_number.value,
+                            value: inputs.bilka_number.value.toString(),
                         }}
                     />
                     <Input
