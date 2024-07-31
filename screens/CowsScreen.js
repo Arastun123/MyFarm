@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { FontAwesome6 } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { GlobalStyles } from "../constants/styles";
 import FixedButton from "../components/UI/FixedButton";
@@ -9,9 +10,14 @@ import { getData } from "../util/http";
 function CowsScreen() {
     const navigation = useNavigation();
     let title = 'Yeni məlumat';
-    function addCow() { navigation.navigate('Redaktə', { title }) }
-
+    
+    function addCow() { 
+        navigation.navigate('Redaktə', { title }) 
+    }
+    
     function changeScreen(screen, name, tableName) {
+        // let hide = name === 'Satılmış' || name === 'Ölmüş'
+        // AsyncStorage.setItem('hide', hide);
         navigation.navigate(screen, { name, tableName });
     }
 
@@ -41,7 +47,7 @@ function CowsScreen() {
                         <Text style={styles.cardTitle}>Buzovlar</Text>
                     </Pressable>
                 </View>
-                <View style={{ ...styles.row, justifyContent: 'center' }}>
+                <View style={styles.row}>
                     <Pressable
                         style={({ pressed }) => [
                             styles.cardContainer,
@@ -51,6 +57,28 @@ function CowsScreen() {
                     >
                         <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
                         <Text style={styles.cardTitle}>Gənclər</Text>
+                    </Pressable>
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.cardContainer,
+                            pressed && styles.press
+                        ]}
+                        onPress={() => changeScreen('Heyvan', 'Satılmış', 'soldAnimal')}
+                    >
+                        <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
+                        <Text style={styles.cardTitle}>Satılmış heyvanlar</Text>
+                    </Pressable>
+                </View>
+                <View style={{ ...styles.row, justifyContent: 'center' }}>
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.cardContainer,
+                            pressed && styles.press
+                        ]}
+                        onPress={() => changeScreen('Heyvan', 'Ölmüş', 'deadAnimal')}
+                    >
+                        <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
+                        <Text style={styles.cardTitle}>Ölmüş heyvanlar</Text>
                     </Pressable>
                 </View>
             </View>

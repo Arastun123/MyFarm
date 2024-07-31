@@ -13,8 +13,8 @@ function LoginScreen({ navigation }) {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [error, setError] = useState('');
     const [inputs, setInputs] = useState({
-        username: 'Erestun',
-        password: '1234',
+        username: '',
+        password: '',
     });
 
     function inputChangeHandler(inputIdentifier, enteredValue) {

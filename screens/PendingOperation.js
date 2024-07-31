@@ -6,17 +6,17 @@ import { GlobalStyles } from "../constants/styles";
 import { getData } from "../util/http";
 import { formatDate } from "../util/date";
 
-function FlatListItem({ id, name, status, date, operationData }) {
+function FlatListItem({ id, name, status, date, operationData, operation_type }) {
     const navigation = useNavigation();
 
     let title = 'Gözləmədə olan əməliyat';
     let mode = 'pending';
-    let defaultValue = JSON.parse(operationData[0].data);
-    let pendingId = operationData[0].id;
-    let operationType = operationData[0].operation_type;
+    let defaultValue = operationData;
+    let pendingId = id;
+    let operationType = operation_type;
 
     function showSelecetedOperation(id) {
-        navigation.navigate('Redaktə', { id, defaultValue, title, mode, pendingId, operationType });
+        navigation.navigate('Redaktə', { id, defaultValue, title, mode, pendingId, operation_type });
     }
 
     return (
@@ -43,36 +43,44 @@ function PendingOperation({ navigation }) {
             getOperations();
         }, [])
     );
+
     async function getOperations() {
         let endpoint = 'pendingOperation/getOperation';
         try {
             const data = await getData(endpoint);
-            setResData(data);
+            setResData(data.reverse());
         } catch (error) {
             console.error('Error', error);
         }
     }
 
+    const safeParseJSON = (jsonString) => {
+        try {
+            return JSON.parse(jsonString);
+        } catch (e) {
+            console.error('Invalid JSON:', jsonString);
+            return {};
+        }
+    };
 
     return (
         <View style={styles.container}>
             {resData.length === 0 ? (
-                <>
-                    <Text style={styles.title}>Gözləmədə olan əməliyyat yoxdur...</Text>
-                </>
+                <Text style={styles.title}>Gözləmədə olan əməliyyat yoxdur...</Text>
             ) : (
                 <View style={styles.flatContainer}>
                     <FlatList
                         data={resData}
                         renderItem={({ item }) => {
-                            let data = JSON.parse(item.data);
+                            const parsedData = safeParseJSON(item.data);
                             return (
                                 <FlatListItem
-                                    id={data.id}
+                                    id={item.id}
                                     name={item.operationName}
                                     status={item.status}
                                     date={item.created_at}
-                                    operationData={resData}
+                                    operationData={parsedData}
+                                    operation_type={item.operation_type}
                                 />
                             );
                         }}
@@ -84,6 +92,7 @@ function PendingOperation({ navigation }) {
         </View>
     );
 }
+
 
 export default PendingOperation;
 

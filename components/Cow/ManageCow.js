@@ -1,5 +1,5 @@
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { FontAwesome, AntDesign } from '@expo/vector-icons';
+import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { FontAwesome, AntDesign, Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from "react";
 import { Dimensions } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -18,12 +18,16 @@ function ManageCow({ route }) {
     const { id, defaultValue, title, name, mode, pendingId, operationType } = route.params;
     const navigation = useNavigation();
 
+    // console.log(route.params);
+
     const [selectedGender, setSelectedGender] = useState(defaultValue ? defaultValue.gender : '');
     const [selectGetWay, setSelectGetWay] = useState(defaultValue ? defaultValue.how_get : '');
     const [showDropdown, setShowDropdown] = useState(false);
     const [animalCategory, setAnimalCategory] = useState(defaultValue ? defaultValue.type : '');
     const [userData, setUserData] = useState({ role: '', token: '', username: '' });
     const [inputCount, setInputCount] = useState(1);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalType, setModalType] = useState('');
     const [inseminationData, setInseminationData] = useState([
         {
             insemination_date: defaultValue?.insemination_dates?.insemination_date || '',
@@ -33,6 +37,10 @@ function ManageCow({ route }) {
     ]);
 
     const [inputs, setInputs] = useState({
+        id: {
+            value: defaultValue ? defaultValue.id : 0,
+            isValid: true
+        },
         bilka_number: {
             value: defaultValue ? defaultValue.bilka_number : 0,
             isValid: true
@@ -54,7 +62,7 @@ function ManageCow({ route }) {
             isValid: true
         },
         other_info: {
-            value: defaultValue ? defaultValue.info : '',
+            value: defaultValue ? defaultValue.other_info : '',
             isValid: true
         },
         mother_bilka: {
@@ -76,34 +84,24 @@ function ManageCow({ route }) {
         categories: {
             value: defaultValue ? defaultValue.categories : '',
             isValid: true
+        },
+        price: {
+            value: defaultValue ? defaultValue.sold_price : 0,
+            isValid: true
+        },
+        sold_to: {
+            value: defaultValue ? defaultValue.sold_to : '',
+            isValid: true
+        },
+        info: {
+            value: defaultValue ? defaultValue.info : '',
+            isValid: true
+        },
+        dead_reason: {
+            value: defaultValue ? defaultValue.dead_reason : '',
+            isValid: true
         }
     });
-
-
-    function inputChangeHandler(inputIdentifier, enteredValue) {
-        setInputs((curInputValues) => {
-            return {
-                ...curInputValues,
-                [inputIdentifier]: { value: enteredValue, isValid: true },
-            }
-        })
-    };
-
-    const handleOptionSelect = (id, tableName, status) => {
-        Alert.alert(`Option Selected: ${status}`);
-        switch (status) {
-            case 'satılıb':
-                break;
-            case 'sağılır':
-                break;
-            case 'tələf olub':
-                break;
-            case 'boğaz':
-                break;
-            default:
-                break;
-        }
-    };
 
     useEffect(() => {
         if (defaultValue !== undefined) {
@@ -116,7 +114,8 @@ function ManageCow({ route }) {
             const role = await AsyncStorage.getItem('role');
             const token = await AsyncStorage.getItem('token');
             const username = await AsyncStorage.getItem('username');
-            setUserData({ role, token, username });
+            const hide = await AsyncStorage.getItem('hide');
+            setUserData({ role, token, username, hide });
         };
         loadUserData();
 
@@ -128,9 +127,73 @@ function ManageCow({ route }) {
                 birth_info: data.birth_info || ''
             })));
         }
-    }, defaultValue)
+    }, defaultValue);
 
-    async function submitCow() {
+    function inputChangeHandler(inputIdentifier, enteredValue) {
+        setInputs((curInputValues) => {
+            return {
+                ...curInputValues,
+                [inputIdentifier]: { value: enteredValue, isValid: true },
+            }
+        })
+    };
+
+    async function submitDeadOrSold(id, tableName, status) {
+        let endPoint = `${modalType}Animal/addAnimal`;
+        let data = {};
+        let response = '';
+
+        try {
+            if (inputs !== '') {
+                data = {
+                    id: inputs.id.value,
+                    bilka_number: inputs.bilka_number.value,
+                    name: inputs.name.value,
+                    weight: inputs.weight.value,
+                    gender: selectedGender,
+                    birthdate: inputs.birthdate.value,
+                    type: animalCategory,
+                    categories: inputs.categories.value,
+                    mother_bilka: inputs.mother_bilka.value,
+                    insemination_data: inseminationData,
+                    how_get: selectGetWay,
+                    get_from: inputs.getFrom.value,
+                    other_info: inputs.other_info.value,
+                    last_checkup_date: inputs.last_checkup_date.value,
+                    child_count: inseminationData.length,
+                    info: inputs.info.value,
+                    dead_reason: inputs.dead_reason.value,
+                    sold_price: inputs.price.value,
+                    sold_to: inputs.sold_to.value,
+                    username: userData.username,
+                    role: userData.role,
+                };
+
+                if (modalType === '') endPoint = route.params.operation_type;
+                response = await addData(endPoint, data);
+                if (userData.role === 'master_admin') {
+
+                    console.log(inputs.id);
+                    deleteAnimal(inputs.id);
+                }
+
+                if (response.status === 201) {
+                    navigation.navigate('Heyvanlar');
+                    Alert.alert('', response.message);
+                }
+                else {
+                    Alert.alert('Xəta', response.message);
+                }
+            } else {
+                Alert.alert('Xəta', 'Zəhmət olmasa məlumatları daxil edin!');
+            }
+        } catch (error) {
+            console.error('Error submitting cow data:', error);
+            Alert.alert('Xəta', 'error');
+        }
+    };
+
+    async function submitAnimal() {
         let endPoint = `${animalCategory}/add-${animalCategory}`;
         let data = {};
         let response = '';
@@ -159,7 +222,8 @@ function ManageCow({ route }) {
                 if (id === undefined) {
                     endPoint = `${animalCategory}/add-${animalCategory}`;
                     response = await addData(endPoint, data);
-                } else {
+                }
+                else {
                     const integerId = parseInt(id, 10);
                     endPoint = `${animalCategory}/update-${animalCategory}`;
                     response = await updateData(endPoint, integerId, data);
@@ -181,8 +245,8 @@ function ManageCow({ route }) {
         }
     }
 
-    async function deleteCow(id) {
-        let endPoint = 'cow/delete-cow';
+    async function deleteAnimal(id, status) {
+        let endPoint = status !== '' ? status : `${animalCategory}/delete-${animalCategory}`;
         let role = userData.role;
         const data = {
             bilka_number: inputs.bilka_number.value,
@@ -203,20 +267,17 @@ function ManageCow({ route }) {
         };
 
         try {
-            let response = ''
-            if (mode === 'pending') {
-                endPoint = 'pendingOperation/deleteOperation';
-                response = await deleteData(endPoint, pendingId, data);
-            }
-            else {
-                response = await deleteData(endPoint, id, data);
+            let response = await deleteData(endPoint, id, data);
+            if (mode === 'delete') {
+                endPoint = 'pendingOperation/deleteOperation'
+                await deleteData(endPoint, pendingId, data);
             }
 
             if (response.status === 200) {
                 Alert.alert('Məlumat silindi');
                 navigation.navigate('Heyvanlar', { refresh: true });
             } else if (response.status === 201) {
-                Alert.alert('Operation pending approval');
+                Alert.alert('Əməliyyat təsdiq gözləyir');
                 navigation.navigate('Gözləmə', { refresh: true });
             } else {
                 Alert.alert('Xəta', response.message);
@@ -243,6 +304,10 @@ function ManageCow({ route }) {
         setInseminationData(newData);
     };
 
+    function modalVisibilty(status, type) {
+        setModalVisible(status);
+        setModalType(type)
+    }
 
     return (
         <>
@@ -444,19 +509,62 @@ function ManageCow({ route }) {
                             value: inputs.other_info.value,
                         }}
                     />
+                    {
+                        route.params.operation_type === 'deadAnimal/addAnimal' &&
+                        (
+                            <Input
+                                label="Ölüm səbəbi"
+                                textinputConfig={{
+                                    multiline: true,
+                                    onChangeText: inputChangeHandler.bind(this, 'dead_reason'),
+                                    value: inputs.dead_reason.value,
+                                }}
+                            />
+                        )
+                    }
+                    {
+                        route.params.operation_type === 'soldAnimal/addAnimal' &&
+                        (
+                            <>
+                                <Input
+                                    label="Qiymət"
+                                    textinputConfig={{
+                                        keyboardType: 'numeric',
+                                        onChangeText: inputChangeHandler.bind(this, 'price'),
+                                        value: inputs.sold_price.value,
+                                    }}
+                                />
+                                <Input
+                                    label="Satıldıqı şəxs"
+                                    textinputConfig={{
+                                        onChangeText: inputChangeHandler.bind(this, 'sold_to'),
+                                        value: inputs.sold_to.value,
+                                    }}
+                                />
+                                <Input
+                                    label='Satış məlumatlar'
+                                    textinputConfig={{
+                                        multiline: true,
+                                        onChangeText: text => inputChangeHandler('info', text),
+                                        value: inputs.info.value,
+                                    }}
+                                />
+                            </>
+                        )
+                    }
                     <View style={styles.radioButtonContainer}>
-                        {mode === 'pending' && userData.role === 'master_admin' &&
+                        {mode === 'delete' && userData.role === 'master_admin' &&
                             (
                                 <>
                                     <Button
                                         text='Təsdiq et'
                                         color='green'
-                                        onPress={() => deleteCow(id, animalCategory)}
+                                        onPress={() => deleteAnimal(id, `${animalCategory}/delete-${animalCategory}`)}
                                     />
                                     <Button
                                         text='Ləğv et'
                                         color='red'
-                                        onPress={() => deleteCow(id, 'pending')}
+                                        onPress={() => deleteAnimal(id, 'pendingOperation/deleteOperation')}
                                     />
                                 </>
                             )
@@ -468,8 +576,26 @@ function ManageCow({ route }) {
                                 <Button
                                     text='Təsdiq et'
                                     color='green'
-                                    onPress={submitCow}
+                                    onPress={submitAnimal}
                                 />
+                            )
+                        }
+
+                        {
+                            route.params.operation_type !== '' && userData.role === 'master_admin' &&
+                            (
+                                <>
+                                    <Button
+                                        text='Təsdiq et'
+                                        color='green'
+                                        onPress={submitDeadOrSold}
+                                    />
+                                    <Button
+                                        text='Ləğv et'
+                                        color='red'
+                                        onPress={() => deleteAnimal(id, 'pendingOperation/deleteOperation')}
+                                    />
+                                </>
                             )
                         }
 
@@ -480,12 +606,12 @@ function ManageCow({ route }) {
                                     <Button
                                         text='Təsdiq et'
                                         color='green'
-                                        onPress={submitCow}
+                                        onPress={submitAnimal}
                                     />
                                     <Button
                                         text='Sil'
                                         color='red'
-                                        onPress={() => deleteCow(id, 'animal')}
+                                        onPress={() => deleteAnimal(id, `${animalCategory}/delete-${animalCategory}`)}
                                     />
                                     {showDropdown && (
                                         <View style={styles.dropdonwBox}>
@@ -494,14 +620,14 @@ function ManageCow({ route }) {
                                                 id={id}
                                                 tableName='sold'
                                                 status='satılıb'
-                                                onSelect={handleOptionSelect}
+                                                onSelect={() => modalVisibilty(true, 'sold')}
                                             />
                                             <Dropdown
                                                 text='Tələf olub'
                                                 id={id}
                                                 tableName='dead'
                                                 status='tələf olub'
-                                                onSelect={handleOptionSelect}
+                                                onSelect={() => modalVisibilty(true, 'dead')}
                                             />
                                         </View>
                                     )}
@@ -514,9 +640,78 @@ function ManageCow({ route }) {
                             )
                         }
                     </View>
+                    {/* } */}
 
                 </ScrollView>
             </View>
+            <Modal visible={modalVisible} animationType='slide'>
+                <Pressable style={{ padding: 5 }}>
+                    <Ionicons
+                        name="close"
+                        size={30}
+                        color="red"
+                        onPress={() => modalVisibilty(false)}
+                        style={{ textAlign: 'right' }}
+                    />
+                </Pressable>
+
+                <View style={styles.modalContent}>
+                    <Input
+                        label='Bilka nomresi'
+                        textinputConfig={{
+                            onChangeText: inputChangeHandler.bind(this, 'bilka_number'),
+                            value: inputs.bilka_number.value.toString(),
+                        }}
+                    />
+                    {
+                        modalType === 'sold' ?
+                            <>
+                                <Input
+                                    label="Qiymət"
+                                    textinputConfig={{
+                                        keyboardType: 'numeric',
+                                        onChangeText: inputChangeHandler.bind(this, 'price'),
+                                        value: inputs.price.value,
+                                    }}
+                                />
+                                <Input
+                                    label="Satıldıqı şəxs"
+                                    textinputConfig={{
+                                        onChangeText: inputChangeHandler.bind(this, 'sold_to'),
+                                        value: inputs.sold_to.value,
+                                    }}
+                                />
+                                <Input
+                                    label='Əlavə məlumatlar'
+                                    textinputConfig={{
+                                        multiline: true,
+                                        onChangeText: text => inputChangeHandler('info', text),
+                                        value: inputs.info,
+                                    }}
+                                />
+                            </>
+
+                            :
+                            <>
+                                <Input
+                                    label="Ölüm səbəbi"
+                                    textinputConfig={{
+                                        multiline: true,
+                                        onChangeText: inputChangeHandler.bind(this, 'dead_reason'),
+                                        value: inputs.dead_reason.value,
+                                    }}
+                                />
+                            </>
+                    }
+                </View>
+                <View style={styles.justifyContentRight}>
+                    <Button
+                        text='Təsdiq et'
+                        onPress={submitDeadOrSold}
+                        color='green'
+                    />
+                </View>
+            </Modal>
         </>
     )
 }

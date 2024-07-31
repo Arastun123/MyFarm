@@ -17,6 +17,7 @@ function CategoryCowScreen({ route, navigate }) {
     let categoriesCount = {};
 
     const { name, tableName } = route.params;
+
     useFocusEffect(
         useCallback(() => {
             getCategoryAnimal();
@@ -66,7 +67,20 @@ function CategoryCowScreen({ route, navigate }) {
     };
 
     function addCow() {
-        navigation.navigate('Redaktə', { screenTitle, tableName, name })
+        if (tableName === 'Satılmış') {
+            // let hide = name === 'Satılmış'
+            // AsyncStorage.setItem('hide', hide);
+            navigation.navigate('Satılmış', { screenTitle, name })
+        }
+        else if (tableName === 'Ölmüş') {
+            // let hide = name === 'Ölmüş'
+            // AsyncStorage.setItem('hide', hide);
+            navigation.navigate('Ölmüş', { screenTitle, name })
+        }
+        else {
+
+            navigation.navigate('Redaktə', { screenTitle, name })
+        }
     }
 
     return (
@@ -84,9 +98,9 @@ function CategoryCowScreen({ route, navigate }) {
                     >
                         <Text
                             style={[
-                            styles.text,
-                            selectedCategory === category.name ? styles.activeCategoryText : null
-                        ]}
+                                styles.text,
+                                selectedCategory === category.name ? styles.activeCategoryText : null
+                            ]}
                         >{category.label}</Text>
                     </Pressable>
                 ))}
