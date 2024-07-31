@@ -3,7 +3,7 @@ import { Pressable, Text, View, StyleSheet } from "react-native";
 import { GlobalStyles } from "../../constants/styles";
 import { useNavigation } from "@react-navigation/native";
 
-function FlatListItem({ id, bilka_number, gender, birthdate, health, data }) {
+function FlatListItem({ id, bilka_number, gender, birthdate, categories, data }) {
     const navigation = useNavigation();
     let title = 'Redaktə';
     function showSelecetedCow(id) {
@@ -23,7 +23,7 @@ function FlatListItem({ id, bilka_number, gender, birthdate, health, data }) {
                 </View>
                 <View>
                     <Text style={styles.textBase}>Doğum tarixi : {birthdate ? new Date(birthdate).toISOString().slice(0, 10) : ''}</Text>
-                    <Text style={styles.textBase}>Sağlamlıq:  {health}</Text>
+                    <Text style={styles.textBase}>Status:  {categories}</Text>
                 </View>
             </View>
         </Pressable>

@@ -12,7 +12,7 @@ function Input({ label, textinputConfig }) {
             <Text style={styles.label}>{label}</Text>
             <TextInput
                 {...textinputConfig}
-                placeholderTextColor="#fff" 
+                placeholderTextColor="#adacac" 
                 style={inputStyles}
                 
             />

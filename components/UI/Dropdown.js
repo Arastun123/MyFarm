@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         backgroundColor: GlobalStyles.colors.primary800,
+        width: 160,
     },
     item: {
         borderBottomWidth: 1,

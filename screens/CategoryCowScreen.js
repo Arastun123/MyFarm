@@ -22,7 +22,7 @@ function CategoryCowScreen({ route, navigate }) {
             getCategoryAnimal();
         }, [])
     );
-    
+
     async function getCategoryAnimal() {
         let url = `${tableName}/${tableName}s`
         try {
@@ -33,33 +33,37 @@ function CategoryCowScreen({ route, navigate }) {
         }
     }
 
-    // data.forEach(cow => {
-    //     const category = cow.type;
-    //     if (categoriesCount[category]) {
-    //         categoriesCount[category]++;
-    //     } else {
-    //         categoriesCount[category] = 1;
-    //     }
-    // });
+    resData.forEach(cow => {
+        const categories = cow.categories ? cow.categories.split(", ") : [];
+        categories.forEach(category => {
+            if (category) {
+                if (categoriesCount[category]) {
+                    categoriesCount[category]++;
+                } else {
+                    categoriesCount[category] = 1;
+                }
+            }
+        });
+    });
 
-    // let formattedCategories = Object.keys(categoriesCount).map(category => {
-    //     return { name: category, label: `${category} (${categoriesCount[category]})` };
-    // });
 
-    // formattedCategories.push({ name: 'sıfırla', label: 'sıfırla' });
+    let formattedCategories = Object.keys(categoriesCount).map(category => {
+        return { name: category, label: `${category} (${categoriesCount[category]})` };
+    });
 
-    // function showSelectedCategory(category) {
-    //     if (category === 'sıfırla') {
-    //         setFilteredCows([]);
-    //         setSelectedCategory(null);
-    //     } else {
-    //         const selectedCows = data.filter(cow => cow.type === category);
-    //         setFilteredCows(selectedCows);
-    //         setSelectedCategory(category);
-    //     }
-    // }
+    formattedCategories.push({ name: 'sıfırla', label: 'sıfırla' });
 
-    // let defaultValue = data
+    const showSelectedCategory = (category) => {
+        if (category === 'sıfırla' || category === selectedCategory) {
+            setFilteredCows(resData);
+            setSelectedCategory(null);
+        }
+        else {
+            const selectedCows = resData.filter(cow => cow.categories && cow.categories.split(", ").includes(category));
+            setFilteredCows(selectedCows);
+            setSelectedCategory(category);
+        }
+    };
 
     function addCow() {
         navigation.navigate('Redaktə', { screenTitle, tableName, name })
@@ -68,15 +72,24 @@ function CategoryCowScreen({ route, navigate }) {
     return (
         <View style={styles.container}>
             <View style={styles.categoriesContainer}>
-                {/* {formattedCategories.map((category, index) => (
+                {formattedCategories.map((category, index) => (
                     <Pressable
-                        style={({ pressed }) => [styles.categoryText, pressed ? styles.buttonPressed : null]}
+                        style={({ pressed }) => [
+                            styles.categoryText,
+                            pressed ? styles.buttonPressed : null,
+                            selectedCategory === category.name ? styles.activeCategory : null
+                        ]}
                         key={index}
                         onPress={() => showSelectedCategory(category.name)}
                     >
-                        <Text style={styles.text}>{category.label}</Text>
+                        <Text
+                            style={[
+                            styles.text,
+                            selectedCategory === category.name ? styles.activeCategoryText : null
+                        ]}
+                        >{category.label}</Text>
                     </Pressable>
-                ))} */}
+                ))}
             </View>
 
             {resData.length === 0 ?
@@ -88,14 +101,14 @@ function CategoryCowScreen({ route, navigate }) {
 
                     <View style={styles.flatContainer}>
                         <FlatList
-                            data={resData}
+                            data={selectedCategory ? filteredCows : resData}
                             renderItem={({ item }) => (
                                 <FlatListItem
                                     id={item.id}
                                     bilka_number={item.bilka_number}
                                     gender={item.gender}
                                     birthdate={item.birthdate}
-                                    health={item.health_status}
+                                    categories={item.categories}
                                     data={resData}
                                 />
                             )}
@@ -151,11 +164,18 @@ const styles = StyleSheet.create({
         backgroundColor: GlobalStyles.colors.primary700,
         overflow: 'hidden',
     },
-    title: { 
+    title: {
         color: GlobalStyles.colors.primary800,
         textAlign: 'center',
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 10,
+    },
+    activeCategory: {
+        backgroundColor: GlobalStyles.colors.primary800,
+    },
+    activeCategoryText: {
+        color: '#fff'
     }
+
 });

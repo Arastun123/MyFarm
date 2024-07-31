@@ -73,6 +73,10 @@ function ManageCow({ route }) {
             value: defaultValue ? defaultValue.last_checkup_date : '',
             isValid: true
         },
+        categories: {
+            value: defaultValue ? defaultValue.categories : '',
+            isValid: true
+        }
     });
 
 
@@ -140,6 +144,7 @@ function ManageCow({ route }) {
                     gender: selectedGender,
                     birthdate: inputs.birthdate.value,
                     type: animalCategory,
+                    categories: inputs.categories.value,
                     mother_bilka: inputs.mother_bilka.value,
                     insemination_data: inseminationData,
                     how_get: selectGetWay,
@@ -423,6 +428,15 @@ function ManageCow({ route }) {
                         }}
                     />
                     <Input
+                        label='Heyvanın hazırki vəziyyəti'
+                        textinputConfig={{
+                            // multiline: true,
+                            placeholder: 'Sağmal, Boğaz',
+                            onChangeText: inputChangeHandler.bind(this, 'categories'),
+                            value: inputs.categories.value,
+                        }}
+                    />
+                    <Input
                         label='Əlavə məlumatlar'
                         textinputConfig={{
                             multiline: true,
@@ -437,7 +451,7 @@ function ManageCow({ route }) {
                                     <Button
                                         text='Təsdiq et'
                                         color='green'
-                                        onPress={submitCow}
+                                        onPress={() => deleteCow(id, animalCategory)}
                                     />
                                     <Button
                                         text='Ləğv et'
@@ -483,24 +497,10 @@ function ManageCow({ route }) {
                                                 onSelect={handleOptionSelect}
                                             />
                                             <Dropdown
-                                                text='Sağmal'
-                                                id={id}
-                                                tableName='sağmal'
-                                                status='sağılır'
-                                                onSelect={handleOptionSelect}
-                                            />
-                                            <Dropdown
                                                 text='Tələf olub'
                                                 id={id}
                                                 tableName='dead'
                                                 status='tələf olub'
-                                                onSelect={handleOptionSelect}
-                                            />
-                                            <Dropdown
-                                                text='Boğaz'
-                                                id={id}
-                                                tableName='boğaz'
-                                                status='boğaz'
                                                 onSelect={handleOptionSelect}
                                             />
                                         </View>
@@ -548,9 +548,10 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
     },
     dropdonwBox: {
-        width: width * 1,
+        width: '44%',
         alignItems: 'center',
         position: 'absolute',
-        top: -149,
+        top: -47,
+        backgroundColor: GlobalStyles.colors.primary800,
     }
 })
