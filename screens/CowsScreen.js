@@ -29,9 +29,10 @@ function CowsScreen() {
             const fetchData = async () => {
                 try {
                     const [cowData, calfData, youngeData] = await Promise.all([
-                        getCategoryAnimal('cow'),
-                        getCategoryAnimal('calf'),
-                        getCategoryAnimal('younge')
+                        getCategoryAnimal('cow/cows'),
+                        getCategoryAnimal('calf/calfs'),
+                        getCategoryAnimal('younge/younges'),
+                        getCategoryAnimal('cow/getReminders'),
                     ]);
 
                     setCows(cowData);

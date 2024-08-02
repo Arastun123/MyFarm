@@ -35,7 +35,7 @@ export async function addData(endPoint, data) {
 }
 
 export async function updateData(endPoint, id, data) {
-    let url = `${mainURL}${endPoint}/${id}`;
+    let url = `${mainURL}${endPoint}/${id}`; 
     try {
         const response = await axios.put(url, data);
         return { status: response.status, message: response.data.message };
@@ -53,7 +53,6 @@ export async function updateData(endPoint, id, data) {
 
 export async function deleteData(endPoint, id, data) {
     let url = `${mainURL}${endPoint}/${id}`;
-    console.log(url);
     try {
         const response = await axios.delete(url, { data });
         return { status: response.status, message: response.data.message };

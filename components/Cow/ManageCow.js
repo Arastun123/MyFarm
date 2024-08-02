@@ -1,21 +1,19 @@
-import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { FontAwesome, AntDesign, Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from "react";
-import { Dimensions } from 'react-native';
+import { useNavigation } from "@react-navigation/native";
+import { FontAwesome, AntDesign, Ionicons } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import Input from "../UI/Input";
 import Button from "../UI/Button";
-import RadioButton from "../UI/RadioButton";
-import { GlobalStyles } from "../../constants/styles";
 import Dropdown from "../UI/Dropdown";
+import RadioButton from "../UI/RadioButton";
+import CustomCheckbox from "../UI/CustomCheckbox";
+import { GlobalStyles } from "../../constants/styles";
 import { addData, deleteData, updateData } from "../../util/http";
-import { useNavigation } from "@react-navigation/native";
-
-const { width, height } = Dimensions.get('window');
 
 function ManageCow({ route }) {
-    const { id, defaultValue, title, name, mode, pendingId, operationType } = route.params;
+    const { id, defaultValue, title, name, mode, pendingId } = route.params;
     const navigation = useNavigation();
 
     const [selectedGender, setSelectedGender] = useState(defaultValue ? defaultValue.gender : '');
@@ -23,9 +21,11 @@ function ManageCow({ route }) {
     const [showDropdown, setShowDropdown] = useState(false);
     const [animalCategory, setAnimalCategory] = useState(defaultValue ? defaultValue.type : '');
     const [userData, setUserData] = useState({ role: '', token: '', username: '' });
-    const [inputCount, setInputCount] = useState(1);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalType, setModalType] = useState('');
+
+    const [selectedDateIndex, setSelectedDateIndex] = useState(null); //
+
     const [inseminationData, setInseminationData] = useState([
         {
             insemination_date: defaultValue?.insemination_dates?.insemination_date || '',
@@ -102,8 +102,12 @@ function ManageCow({ route }) {
         mode: {
             value: defaultValue ? defaultValue.mode : '',
             isValid: true
+        },
+        selected_insemination_date: {
+            value: defaultValue ? defaultValue.selected_insemination_date : '',
+            isValid: true
         }
-    });
+    });    
 
     useEffect(() => {
         if (defaultValue !== undefined) {
@@ -190,12 +194,12 @@ function ManageCow({ route }) {
         }
     };
 
-    async function submitAnimal() {
+    const submitAnimal = async () => {
         let endPoint = `${animalCategory}/add-${animalCategory}`;
         let data = {};
         let response = '';
         try {
-            if (inputs !== '') {
+            if (inputs) {
                 data = {
                     bilka_number: inputs.bilka_number.value,
                     name: inputs.name.value,
@@ -206,6 +210,7 @@ function ManageCow({ route }) {
                     categories: inputs.categories.value,
                     mother_bilka: inputs.mother_bilka.value,
                     insemination_data: inseminationData,
+                    selected_insemination_date: inputs.selected_insemination_date.value.slice(0, 10),
                     how_get: selectGetWay,
                     get_from: inputs.getFrom.value,
                     other_info: inputs.other_info.value,
@@ -216,23 +221,18 @@ function ManageCow({ route }) {
                     actionType: ''
                 };
 
-                if (id === undefined) {
+                if (defaultValue?.id === undefined) {
                     endPoint = `${animalCategory}/add-${animalCategory}`;
                     response = await addData(endPoint, data);
-                }
-                else {
+                } else {
                     if (defaultValue.type !== animalCategory) {
                         data.actionType = 'changeCategory';
                         endPoint = `${animalCategory}/add-${animalCategory}`;
                         response = await addData(endPoint, data);
-                        let status = `${defaultValue.type}/delete-${defaultValue.type}`
-                        deleteData(status, inputs.id.value, data)
-                        console.log(data);
-
-                    }
-                    else {
-
-                        const integerId = parseInt(id, 10);
+                        let status = `${defaultValue.type}/delete-${defaultValue.type}`;
+                        deleteData(status, inputs.id.value, data);
+                    } else {
+                        const integerId = parseInt(defaultValue.id, 10);
                         endPoint = `${animalCategory}/update-${animalCategory}`;
                         response = await updateData(endPoint, integerId, data);
                     }
@@ -241,8 +241,7 @@ function ManageCow({ route }) {
                 if (response.status === 201) {
                     navigation.navigate('Heyvanlar');
                     Alert.alert('', response.message);
-                }
-                else {
+                } else {
                     Alert.alert('Xəta', response.message);
                 }
             } else {
@@ -252,7 +251,7 @@ function ManageCow({ route }) {
             console.error('Error submitting cow data:', error);
             Alert.alert('Xəta', 'error');
         }
-    }
+    };
 
     async function deleteAnimal(id, status) {
         let endPoint = status !== '' ? status : `${animalCategory}/delete-${animalCategory}`;
@@ -318,7 +317,24 @@ function ManageCow({ route }) {
         setModalType(type)
     }
 
-    // console.log(mode);
+    const handleCheckboxChange = (index) => {
+        const selectedInseminationDate = inseminationData[index].insemination_date;
+        setSelectedDateIndex((prevIndex) => {
+
+            if (prevIndex === index) {
+                setInputs((prevInputs) => ({
+                    ...prevInputs,
+                    selected_insemination_date: { value: '', isValid: true }
+                }));
+                return null;
+            }
+            setInputs((prevInputs) => ({
+                ...prevInputs,
+                selected_insemination_date: { value: selectedInseminationDate, isValid: true }
+            }));
+            return index;
+        });
+    };
 
     return (
         <>
@@ -402,6 +418,11 @@ function ManageCow({ route }) {
                                                 onChangeText: (value) => handleInputChange(index, 'insemination_date', value),
                                                 value: data.insemination_date,
                                             }}
+                                        />
+                                        <CustomCheckbox
+                                            label="Mayalanmanı təsdiq edin."
+                                            isChecked={selectedDateIndex === index || (inputs.selected_insemination_date.value === data.insemination_date)}
+                                            onToggle={() => handleCheckboxChange(index)}
                                         />
                                         <Input
                                             label={`Doğum Tarix ${index + 1}`}
