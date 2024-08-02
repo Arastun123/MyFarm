@@ -18,8 +18,6 @@ function ManageCow({ route }) {
     const { id, defaultValue, title, name, mode, pendingId, operationType } = route.params;
     const navigation = useNavigation();
 
-    // console.log(route.params);
-
     const [selectedGender, setSelectedGender] = useState(defaultValue ? defaultValue.gender : '');
     const [selectGetWay, setSelectGetWay] = useState(defaultValue ? defaultValue.how_get : '');
     const [showDropdown, setShowDropdown] = useState(false);
@@ -85,7 +83,7 @@ function ManageCow({ route }) {
             value: defaultValue ? defaultValue.categories : '',
             isValid: true
         },
-        price: {
+        sold_price: {
             value: defaultValue ? defaultValue.sold_price : 0,
             isValid: true
         },
@@ -99,6 +97,10 @@ function ManageCow({ route }) {
         },
         dead_reason: {
             value: defaultValue ? defaultValue.dead_reason : '',
+            isValid: true
+        },
+        mode: {
+            value: defaultValue ? defaultValue.mode : '',
             isValid: true
         }
     });
@@ -163,7 +165,7 @@ function ManageCow({ route }) {
                     child_count: inseminationData.length,
                     info: inputs.info.value,
                     dead_reason: inputs.dead_reason.value,
-                    sold_price: inputs.price.value,
+                    sold_price: inputs.sold_price.value,
                     sold_to: inputs.sold_to.value,
                     username: userData.username,
                     role: userData.role,
@@ -171,11 +173,6 @@ function ManageCow({ route }) {
 
                 if (modalType === '') endPoint = route.params.operation_type;
                 response = await addData(endPoint, data);
-                if (userData.role === 'master_admin') {
-
-                    console.log(inputs.id);
-                    deleteAnimal(inputs.id);
-                }
 
                 if (response.status === 201) {
                     navigation.navigate('Heyvanlar');
@@ -197,7 +194,6 @@ function ManageCow({ route }) {
         let endPoint = `${animalCategory}/add-${animalCategory}`;
         let data = {};
         let response = '';
-
         try {
             if (inputs !== '') {
                 data = {
@@ -217,6 +213,7 @@ function ManageCow({ route }) {
                     child_count: inseminationData.length,
                     username: userData.username,
                     role: userData.role,
+                    actionType: ''
                 };
 
                 if (id === undefined) {
@@ -224,9 +221,21 @@ function ManageCow({ route }) {
                     response = await addData(endPoint, data);
                 }
                 else {
-                    const integerId = parseInt(id, 10);
-                    endPoint = `${animalCategory}/update-${animalCategory}`;
-                    response = await updateData(endPoint, integerId, data);
+                    if (defaultValue.type !== animalCategory) {
+                        data.actionType = 'changeCategory';
+                        endPoint = `${animalCategory}/add-${animalCategory}`;
+                        response = await addData(endPoint, data);
+                        let status = `${defaultValue.type}/delete-${defaultValue.type}`
+                        deleteData(status, inputs.id.value, data)
+                        console.log(data);
+
+                    }
+                    else {
+
+                        const integerId = parseInt(id, 10);
+                        endPoint = `${animalCategory}/update-${animalCategory}`;
+                        response = await updateData(endPoint, integerId, data);
+                    }
                 }
 
                 if (response.status === 201) {
@@ -308,6 +317,8 @@ function ManageCow({ route }) {
         setModalVisible(status);
         setModalType(type)
     }
+
+    // console.log(mode);
 
     return (
         <>
@@ -530,7 +541,7 @@ function ManageCow({ route }) {
                                     label="Qiymət"
                                     textinputConfig={{
                                         keyboardType: 'numeric',
-                                        onChangeText: inputChangeHandler.bind(this, 'price'),
+                                        onChangeText: inputChangeHandler.bind(this, 'sold_price'),
                                         value: inputs.sold_price.value,
                                     }}
                                 />
@@ -553,7 +564,7 @@ function ManageCow({ route }) {
                         )
                     }
                     <View style={styles.radioButtonContainer}>
-                        {mode === 'delete' && userData.role === 'master_admin' &&
+                        {mode === 'pending' && userData.role === 'master_admin' && route.params.operation_type == 'delete' &&
                             (
                                 <>
                                     <Button
@@ -571,7 +582,7 @@ function ManageCow({ route }) {
                         }
 
                         {
-                            mode !== 'pending' && id === undefined &&
+                            id === undefined &&
                             (
                                 <Button
                                     text='Təsdiq et'
@@ -582,7 +593,7 @@ function ManageCow({ route }) {
                         }
 
                         {
-                            route.params.operation_type !== '' && userData.role === 'master_admin' &&
+                            mode !== 'add' && mode !== 'edit' && userData.role === 'master_admin' &&
                             (
                                 <>
                                     <Button
@@ -600,7 +611,7 @@ function ManageCow({ route }) {
                         }
 
                         {
-                            mode !== 'pending' && id !== undefined &&
+                            mode === 'edit' &&
                             (
                                 <>
                                     <Button
@@ -640,8 +651,6 @@ function ManageCow({ route }) {
                             )
                         }
                     </View>
-                    {/* } */}
-
                 </ScrollView>
             </View>
             <Modal visible={modalVisible} animationType='slide'>
@@ -670,8 +679,8 @@ function ManageCow({ route }) {
                                     label="Qiymət"
                                     textinputConfig={{
                                         keyboardType: 'numeric',
-                                        onChangeText: inputChangeHandler.bind(this, 'price'),
-                                        value: inputs.price.value,
+                                        onChangeText: inputChangeHandler.bind(this, 'sold_price'),
+                                        value: inputs.sold_price.value,
                                     }}
                                 />
                                 <Input

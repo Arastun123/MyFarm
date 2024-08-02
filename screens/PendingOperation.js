@@ -19,6 +19,7 @@ function FlatListItem({ id, name, status, date, operationData, operation_type })
         navigation.navigate('Redaktə', { id, defaultValue, title, mode, pendingId, operation_type });
     }
 
+
     return (
         <Pressable
             style={({ pressed }) => pressed && styles.press}
@@ -80,7 +81,7 @@ function PendingOperation({ navigation }) {
                                     status={item.status}
                                     date={item.created_at}
                                     operationData={parsedData}
-                                    operation_type={item.operation_type}
+                                    operation_type={item.operation_type}                                    
                                 />
                             );
                         }}

@@ -8,7 +8,8 @@ function FlatListItem({ id, bilka_number, gender, birthdate, categories, data })
     let title = 'Redaktə';
     function showSelecetedCow(id) {
         const defaultValue = data.find((item) => item.id === id);
-        navigation.navigate('Redaktə', { id, defaultValue, title })
+        let mode = 'edit'
+        navigation.navigate('Redaktə', { id, defaultValue, title, mode })
     }
 
     return (

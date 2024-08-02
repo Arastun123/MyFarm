@@ -1,7 +1,8 @@
-import { useNavigation } from "@react-navigation/native";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useCallback, useState } from "react";
 import { FontAwesome6 } from '@expo/vector-icons';
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import { GlobalStyles } from "../constants/styles";
 import FixedButton from "../components/UI/FixedButton";
@@ -9,22 +10,63 @@ import { getData } from "../util/http";
 
 function CowsScreen() {
     const navigation = useNavigation();
+    const [cows, setCows] = useState([]);
+    const [calves, setCalves] = useState([]);
+    const [younges, setYounges] = useState([]);
     let title = 'Yeni məlumat';
-    
-    function addCow() { 
-        navigation.navigate('Redaktə', { title }) 
+    let mode = 'add'
+    function addCow() {
+        navigation.navigate('Redaktə', { title, mode })
     }
-    
+
     function changeScreen(screen, name, tableName) {
-        // let hide = name === 'Satılmış' || name === 'Ölmüş'
-        // AsyncStorage.setItem('hide', hide);
         navigation.navigate(screen, { name, tableName });
+    }
+
+
+    useFocusEffect(
+        useCallback(() => {
+            const fetchData = async () => {
+                try {
+                    const [cowData, calfData, youngeData] = await Promise.all([
+                        getCategoryAnimal('cow'),
+                        getCategoryAnimal('calf'),
+                        getCategoryAnimal('younge')
+                    ]);
+
+                    setCows(cowData);
+                    setCalves(calfData);
+                    setYounges(youngeData);
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            };
+
+            fetchData();
+        }, [])
+    );
+
+    async function getCategoryAnimal(name) {
+        let url = `${name}/${name}s`;
+        try {
+            const data = await getData(url);
+            return data;
+        } catch (error) {
+            console.error('Error fetching data for', name, ':', error);
+            return [];
+        }
     }
 
 
     return (
         <View style={{ flex: 1, marginHorizontal: 15 }}>
             <View style={styles.container}>
+                <View>
+                    <Text style={styles.title}>İnək sayı: {cows.length}</Text>
+                    <Text style={styles.title}>Buzov sayı: {calves.length}</Text>
+                    <Text style={styles.title}>Gənc sayı: {younges.length}</Text>
+                    <Text style={styles.title}>Toplam: {younges.length + calves.length + cows.length}</Text>
+                </View>
                 <View style={styles.row}>
                     <Pressable
                         style={({ pressed }) => [
@@ -131,5 +173,12 @@ const styles = StyleSheet.create({
     press: {
         opacity: 0.75,
         backgroundColor: GlobalStyles.colors.primary200,
-    }
+    },
+    title: {
+        color: GlobalStyles.colors.primary800,
+        textAlign: 'center',
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
 });

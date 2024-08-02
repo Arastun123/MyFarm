@@ -68,18 +68,14 @@ function CategoryCowScreen({ route, navigate }) {
 
     function addCow() {
         if (tableName === 'Satılmış') {
-            // let hide = name === 'Satılmış'
-            // AsyncStorage.setItem('hide', hide);
             navigation.navigate('Satılmış', { screenTitle, name })
         }
         else if (tableName === 'Ölmüş') {
-            // let hide = name === 'Ölmüş'
-            // AsyncStorage.setItem('hide', hide);
             navigation.navigate('Ölmüş', { screenTitle, name })
         }
         else {
-
-            navigation.navigate('Redaktə', { screenTitle, name })
+            let mode = 'add'
+            navigation.navigate('Redaktə', { screenTitle, name, mode })
         }
     }
 
