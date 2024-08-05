@@ -8,6 +8,7 @@ import FixedButton from '../components/UI/FixedButton';
 import Button from '../components/UI/Button';
 import { getFormatedDate } from '../util/date';
 import RadioButton from '../components/UI/RadioButton';
+import { GlobalStyles } from '../constants/styles';
 
 const dailyMilkReports = [
     { id: '1', date: '2024-07-20', amount: '10', cowCount: '15', time: 'axşam' },
@@ -179,7 +180,7 @@ function MilkScreen() {
                     <Button
                         text='Təsdiq et'
                         onPress={addMilkReport}
-                        color='green'
+                        color={GlobalStyles.colors.green}
                     />
                 </View>
             </Modal>

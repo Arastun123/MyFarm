@@ -12,7 +12,7 @@ function Input({ label, textinputConfig }) {
             <Text style={styles.label}>{label}</Text>
             <TextInput
                 {...textinputConfig}
-                placeholderTextColor="#adacac" 
+                placeholderTextColor={GlobalStyles.colors.lightGold}
                 style={inputStyles}
                 
             />
@@ -28,12 +28,12 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: 16,
-        color: GlobalStyles.colors.primary500,
+        color: GlobalStyles.colors.lightGreen,
         marginBottom: 4
     },
     input: {
-        backgroundColor: GlobalStyles.colors.primary700,
-        color: '#fff',
+        backgroundColor: GlobalStyles.colors.green,
+        color: GlobalStyles.colors.lightGold,
         padding: 6,
         borderRadius: 6,
         fontSize: 18,

@@ -20,7 +20,7 @@ function WarehouseScreen() {
                     ]}
                     onPress={() => changeScreen('Item', 'Neqliyat vasitəsi', 'vehicles')}
                 >
-                    <FontAwesome6 name='tractor' size={30} color={GlobalStyles.colors.primary700} />
+                    <FontAwesome6 name='tractor' size={30} color={GlobalStyles.colors.gold} />
                     <Text style={styles.cardTitle}>Tractor</Text>
                 </Pressable>
                 <Pressable
@@ -30,7 +30,7 @@ function WarehouseScreen() {
                     ]}
                     onPress={() => changeScreen('Item', 'Yem', 'feed')}
                 >
-                    <MaterialCommunityIcons name='grass' size={30} color={GlobalStyles.colors.primary700} />
+                    <MaterialCommunityIcons name='grass' size={30} color={GlobalStyles.colors.gold} />
                     <Text style={styles.cardTitle}>Yem</Text>
                 </Pressable>
             </View>
@@ -42,7 +42,7 @@ function WarehouseScreen() {
                     ]}
                     onPress={() => changeScreen('Item', 'Dərman', 'medicine')}
                 >
-                    <AntDesign name="medicinebox" size={30} color={GlobalStyles.colors.primary700} />
+                    <AntDesign name="medicinebox" size={30} color={GlobalStyles.colors.gold} />
                     <Text style={styles.cardTitle}>Dərman</Text>
                 </Pressable>
                 <Pressable
@@ -52,7 +52,7 @@ function WarehouseScreen() {
                     ]}
                     onPress={() => changeScreen('Item', 'Texniki alətlər', 'tools')}
                 >
-                    <AntDesign name="tool" size={30} color={GlobalStyles.colors.primary700} />
+                    <AntDesign name="tool" size={30} color={GlobalStyles.colors.gold} />
                     <Text style={styles.cardTitle}>Texniki alətlər</Text>
                 </Pressable>
             </View>
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
         borderRadius: 2,
         textAlign: 'center',
         elevation: 3,
-        shadowColor: GlobalStyles.colors.primary800,
+        shadowColor: GlobalStyles.colors.gold,
         shadowOpacity: 0.5,
         shadowRadius: 1,
         shadowOffset: { width: 1, height: 1 },
@@ -96,10 +96,9 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         padding: 10,
-        color: GlobalStyles.colors.primary700,
+        color: GlobalStyles.colors.green,
     },
     press: {
         opacity: 0.75,
-        backgroundColor: GlobalStyles.colors.primary200,
     }
 });

@@ -9,7 +9,7 @@ function Dropdown({ text, id, tableName, status, onSelect }) {
             <Button
                 text={text}
                 style={styles.item}
-                color={GlobalStyles.colors.primary800}
+                color={GlobalStyles.colors.lightGreen}
                 onPress={() => onSelect(id, tableName, status)}
             />
         </Pressable>
@@ -21,12 +21,11 @@ export default Dropdown;
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        backgroundColor: GlobalStyles.colors.primary800,
+        backgroundColor: GlobalStyles.colors.lightGreen,
         width: 160,
     },
     item: {
         borderBottomWidth: 1,
-        borderBottomColor: GlobalStyles.colors.primary800,
-        color: '#333',
+        borderBottomColor: GlobalStyles.colors.lightGreen,
     }
 });

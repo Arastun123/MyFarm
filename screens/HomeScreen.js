@@ -21,7 +21,7 @@ function HomeScreen({ }) {
                     ]}
                     onPress={() => changeScreen('Heyvanlar')}
                 >
-                    <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
+                    <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.gold} />
                     <Text style={styles.cardTitle}>Heyvanlar</Text>
                 </Pressable>
                 <Pressable
@@ -31,7 +31,7 @@ function HomeScreen({ }) {
                     ]}
                     onPress={() => changeScreen('Süd')}
                 >
-                    <MaterialCommunityIcons name='water' size={30} color={GlobalStyles.colors.primary700} />
+                    <MaterialCommunityIcons name='water' size={30} color={GlobalStyles.colors.gold} />
                     <Text style={styles.cardTitle}>Süd</Text>
                 </Pressable>
             </View>
@@ -43,7 +43,7 @@ function HomeScreen({ }) {
                     ]}
                     onPress={() => changeScreen('Maliyə')}
                 >
-                    <MaterialCommunityIcons name='finance' size={30} color={GlobalStyles.colors.primary700} />
+                    <MaterialCommunityIcons name='finance' size={30} color={GlobalStyles.colors.gold} />
                     <Text style={styles.cardTitle}>Maliyə</Text>
                 </Pressable>
                 <Pressable
@@ -53,7 +53,7 @@ function HomeScreen({ }) {
                     ]}
                     onPress={() => changeScreen('Anbar')}
                 >
-                    <FontAwesome6 name='warehouse' size={30} color={GlobalStyles.colors.primary700} />
+                    <FontAwesome6 name='warehouse' size={30} color={GlobalStyles.colors.gold} />
                     <Text style={styles.cardTitle}>Anbar</Text>
                 </Pressable>
             </View>
@@ -65,7 +65,7 @@ function HomeScreen({ }) {
                     ]}
                     onPress={() => changeScreen('Gözləmə')}
                 >
-                    <MaterialIcons name="pending-actions" size={30} color={GlobalStyles.colors.primary700} />
+                    <MaterialIcons name="pending-actions" size={30} color={GlobalStyles.colors.gold} />
                     <Text style={styles.cardTitle}>Gözləmədə olan əməliyyatlar</Text>
                 </Pressable>
             </View>
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
         borderRadius: 2,
         textAlign: 'center',
         elevation: 3,
-        shadowColor: GlobalStyles.colors.primary800,
+        shadowColor: GlobalStyles.colors.gold,
         shadowOpacity: 0.5,
         shadowRadius: 1,
         shadowOffset: { width: 1, height: 1 },
@@ -109,10 +109,9 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         padding: 10,
-        color: GlobalStyles.colors.primary700,
+        color: GlobalStyles.colors.green,
     },
     press: {
         opacity: 0.75,
-        backgroundColor: GlobalStyles.colors.primary200,
     }
 });

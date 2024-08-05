@@ -14,8 +14,9 @@ function FlatListItem({ id, bilka_number, gender, birthdate, categories, data })
 
     return (
         <Pressable
-            style={({ pressed }) => pressed && styles.press}
+            style={({ pressed }) => [styles.main, pressed && styles.press]}
             onPress={() => showSelecetedCow(id)}
+
         >
             <View style={styles.item}>
                 <View>
@@ -35,22 +36,24 @@ export default FlatListItem;
 
 const styles = StyleSheet.create({
     item: {
-        padding: 12,
-        marginVertical: 8,
-        backgroundColor: GlobalStyles.colors.primary500,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        borderRadius: 8,
-        elevation: 3,
-        shadowColor: GlobalStyles.colors.gray500,
-        shadowRadius: 4,
-        shadowOffset: { width: 1, height: 1 },
-        shadowOpacity: 0.4,
     },
     textBase: {
-        color: GlobalStyles.colors.primary100,
+        color: GlobalStyles.colors.lightGreen,
         fontSize: 14,
     },
-    press: { opacity: 0.75 }
-
+    main: {
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        elevation: 5,
+        shadowRadius: 4,
+        shadowOffset: { width: 3, height: 3 },
+        shadowOpacity: 0.4,
+        padding: 12,
+        marginVertical: 8,
+    },
+    press: {
+        opacity: 0.5
+    }
 });

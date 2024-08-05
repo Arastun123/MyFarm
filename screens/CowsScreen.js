@@ -1,13 +1,13 @@
 import { useCallback, useState } from "react";
-import { FontAwesome6 } from '@expo/vector-icons';
+import { FontAwesome6, FontAwesome } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View, FlatList, ScrollView } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import { GlobalStyles } from "../constants/styles";
 import FixedButton from "../components/UI/FixedButton";
 import { getData } from "../util/http";
-import { formatDate } from "../util/date";
+import Dropdown from "../components/UI/Dropdown";
+import Button from "../components/UI/Button";
 
 function FlatListItem({ id, bilka_number, selected_insemination_date, left_day, last_two_weeks, seven_month }) {
     const navigation = useNavigation();
@@ -21,10 +21,7 @@ function FlatListItem({ id, bilka_number, selected_insemination_date, left_day, 
 
 
     return (
-        <Pressable
-            style={({ pressed }) => pressed && styles.press}
-            onPress={() => showSelecetedOperation(id)}
-        >
+        <Pressable>
             <View style={styles.item}>
                 <View>
                     <Text style={styles.textBase}>Bilka nömrəsi: {bilka_number}</Text>
@@ -45,6 +42,7 @@ function CowsScreen() {
     const [calves, setCalves] = useState([]);
     const [younges, setYounges] = useState([]);
     const [pregnancies, setPregnancies] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
 
     let title = 'Yeni məlumat';
     let mode = 'add'
@@ -79,7 +77,9 @@ function CowsScreen() {
             };
 
             fetchData();
+            setShowDropdown(false)
         }, [])
+
     );
 
     async function getCategoryAnimal(name) {
@@ -95,92 +95,76 @@ function CowsScreen() {
 
     return (
         <View style={{ flex: 1, marginHorizontal: 15 }}>
-            <ScrollView>
-                <View style={styles.container}>
-                    <View>
-                        <Text style={styles.title}>İnək sayı: {cows.length}</Text>
-                        <Text style={styles.title}>Buzov sayı: {calves.length}</Text>
-                        <Text style={styles.title}>Gənc sayı: {younges.length}</Text>
-                        <Text style={styles.title}>Toplam: {younges.length + calves.length + cows.length}</Text>
-                    </View>
-                    <Text style={styles.title}>Boğaz inəklər</Text>
-                    <View style={styles.flatContainer}>
-                        <FlatList
-                            data={pregnancies}
-                            renderItem={({ item }) => {
-                                return (
-                                    <FlatListItem
-                                        id={item.id}
-                                        bilka_number={item.bilka_number}
-                                        selected_insemination_date={item.selected_insemination_date}
-                                        left_day={item.left_day}
-                                        seven_month={item.seven_month}
-                                        last_two_weeks={item.last_two_weeks}
-                                    />
-                                );
-                            }}
-                            keyExtractor={(item) => item.id.toString()}
-                            showsVerticalScrollIndicator={false}
-                        />
-                    </View>
-                    <View style={styles.row}>
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.cardContainer,
-                                pressed && styles.press
-                            ]}
-                            onPress={() => changeScreen('Heyvan', 'İnək', 'cow')}
-                        >
-                            <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
-                            <Text style={styles.cardTitle}>İnəklər</Text>
-                        </Pressable>
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.cardContainer,
-                                pressed && styles.press
-                            ]}
-                            onPress={() => changeScreen('Heyvan', 'Buzov', 'calf')}
-                        >
-                            <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
-                            <Text style={styles.cardTitle}>Buzovlar</Text>
-                        </Pressable>
-                    </View>
-                    <View style={styles.row}>
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.cardContainer,
-                                pressed && styles.press
-                            ]}
-                            onPress={() => changeScreen('Heyvan', 'Gənc', 'younge')}
-                        >
-                            <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
-                            <Text style={styles.cardTitle}>Gənclər</Text>
-                        </Pressable>
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.cardContainer,
-                                pressed && styles.press
-                            ]}
-                            onPress={() => changeScreen('Heyvan', 'Satılmış', 'soldAnimal')}
-                        >
-                            <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
-                            <Text style={styles.cardTitle}>Satılmış heyvanlar</Text>
-                        </Pressable>
-                    </View>
-                    <View style={{ ...styles.row, justifyContent: 'center' }}>
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.cardContainer,
-                                pressed && styles.press
-                            ]}
-                            onPress={() => changeScreen('Heyvan', 'Ölmüş', 'deadAnimal')}
-                        >
-                            <FontAwesome6 name='cow' size={30} color={GlobalStyles.colors.primary700} />
-                            <Text style={styles.cardTitle}>Ölmüş heyvanlar</Text>
-                        </Pressable>
-                    </View>
+            {showDropdown && (
+                <View style={styles.dropdonwBox}>
+                    <Dropdown
+                        text='İnək'
+                        tableName='sold'
+                        status='satılıb'
+                        onSelect={() => changeScreen('Heyvan', 'İnək', 'cow')}
+                    />
+                    <Dropdown
+                        text='Gənc'
+                        tableName='dead'
+                        status='tələf olub'
+                        onSelect={() => changeScreen('Heyvan', 'Gənc', 'younge')}
+
+                    />
+                    <Dropdown
+                        text='Buzov'
+                        tableName='sold'
+                        status='satılıb'
+                        onSelect={() => changeScreen('Heyvan', 'Buzov', 'calf')}
+
+                    />
+                    <Dropdown
+                        text='Satılıb'
+                        tableName='dead'
+                        status='tələf olub'
+                        onSelect={() => changeScreen('Heyvan', 'Satılmış', 'soldAnimal')}
+
+                    />
+                    <Dropdown
+                        text='Tələf olub'
+                        tableName='dead'
+                        status='tələf olub'
+                        onSelect={() => changeScreen('Heyvan', 'Ölmüş inəklər', 'deadAnimal')}
+                    />
                 </View>
-            </ScrollView>
+            )}
+            <Button
+                text={'Qruplar'}
+                color={showDropdown ? GlobalStyles.colors.lightGreen : GlobalStyles.colors.green}
+                onPress={() => { setShowDropdown(!showDropdown) }}
+            />
+            <View style={styles.container}>
+                <View>
+                    <Text style={styles.title}>İnək sayı: {cows.length}</Text>
+                    <Text style={styles.title}>Buzov sayı: {calves.length}</Text>
+                    <Text style={styles.title}>Gənc sayı: {younges.length}</Text>
+                    <Text style={styles.title}>Toplam: {younges.length + calves.length + cows.length}</Text>
+                </View>
+                <Text style={styles.title}>Boğaz olan inəklər</Text>
+                <View style={styles.flatContainer}>
+                    <FlatList
+                        data={pregnancies}
+                        renderItem={({ item }) => {
+                            return (
+                                <FlatListItem
+                                    id={item.id}
+                                    bilka_number={item.bilka_number}
+                                    selected_insemination_date={item.selected_insemination_date}
+                                    left_day={item.left_day}
+                                    seven_month={item.seven_month}
+                                    last_two_weeks={item.last_two_weeks}
+                                />
+                            );
+                        }}
+                        keyExtractor={(item) => item.id.toString()}
+                        showsVerticalScrollIndicator={false}
+                    />
+                </View>
+            </View>
             <FixedButton
                 onPress={addCow}
                 name='add'
@@ -198,41 +182,12 @@ const styles = StyleSheet.create({
         padding: 10,
         paddingBottom: 20
     },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignContent: 'center',
-    },
-    cardContainer: {
-        width: '45%',
-        height: 120,
-        margin: 10,
-        padding: 5,
-        borderRadius: 2,
-        textAlign: 'center',
-        elevation: 3,
-        shadowColor: GlobalStyles.colors.primary800,
-        shadowOpacity: 0.5,
-        shadowRadius: 1,
-        shadowOffset: { width: 1, height: 1 },
-        shadowOpacity: 0.4,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    cardTitle: {
-        textAlign: 'center',
-        fontSize: 20,
-        fontWeight: 'bold',
-        padding: 10,
-        color: GlobalStyles.colors.primary700,
-    },
     press: {
         opacity: 0.75,
-        backgroundColor: GlobalStyles.colors.primary200,
+        backgroundColor: GlobalStyles.colors.lightGreen,
     },
     title: {
-        color: GlobalStyles.colors.primary800,
+        color: GlobalStyles.colors.lightGreen,
         textAlign: 'center',
         fontSize: 20,
         fontWeight: 'bold',
@@ -246,7 +201,7 @@ const styles = StyleSheet.create({
         height: 120,
         padding: 12,
         marginVertical: 8,
-        backgroundColor: GlobalStyles.colors.primary500,
+        backgroundColor: '#fff',
         flexDirection: 'row',
         justifyContent: 'space-between',
         borderRadius: 8,
@@ -257,7 +212,16 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.4,
     },
     textBase: {
-        color: GlobalStyles.colors.primary100,
+        color: GlobalStyles.colors.lightGreen,
         fontSize: 14,
     },
+    dropdonwBox: {
+        width: '44%',
+        alignItems: 'center',
+        position: 'absolute',
+        top: 48,
+        left: 7,
+        backgroundColor: GlobalStyles.colors.green,
+        zIndex: 11,
+    }
 });

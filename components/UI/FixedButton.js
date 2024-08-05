@@ -10,7 +10,7 @@ function FixedButton({ onPress, name }) {
             onPress={onPress}
         >
             <Text>
-                <MaterialIcons name={name} size={24} color={GlobalStyles.colors.primary700} />
+                <MaterialIcons name={name} size={24} color={GlobalStyles.colors.gold} />
             </Text>
         </Pressable>
     )
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         borderRadius: 30,
-        backgroundColor: GlobalStyles.colors.primary100,
+        backgroundColor: GlobalStyles.colors.green,
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: '#000',

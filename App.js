@@ -18,6 +18,7 @@ import LoginScreen from './screens/LoginScreen';
 import CategoryCowScreen from './screens/CategoryCowScreen';
 import Button from './components/UI/Button';
 import PendingOperation from './screens/PendingOperation';
+import { GlobalStyles } from './constants/styles';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -34,14 +35,13 @@ function DrawerNavigator() {
   return (
     <Drawer.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: '#eee' },
-        headerTintColor: '#333',
+        headerStyle: { backgroundColor: GlobalStyles.colors.green },
+        headerTintColor: GlobalStyles.colors.gold,
         sceneContainerStyle: { backgroundColor: '#eee' },
         drawerContentStyle: { backgroundColor: '#eee' },
-        drawerInactiveTintColor: '#333',
-        drawerActiveTintColor: '#333',
-        drawerActiveBackgroundColor: '#351401',
-        drawerActiveBackgroundColor: '#aaa',
+        drawerInactiveTintColor: GlobalStyles.colors.gold,
+        drawerActiveTintColor: GlobalStyles.colors.gold,
+        drawerActiveBackgroundColor: GlobalStyles.colors.green,
       }}
     >
       <Drawer.Screen
@@ -107,7 +107,7 @@ function DrawerNavigator() {
 
 function LogoutButton({ onPress }) {
   return (
-    <Button title="Logout" onPress={onPress} color="none" text={<MaterialCommunityIcons name="logout" size={24} color="#333" />} />
+    <Button title="Logout" onPress={onPress} color="none" text={<MaterialCommunityIcons name="logout" size={24} color="#b8860b" />} />
   );
 }
 
@@ -117,13 +117,13 @@ export default function App() {
   return (
     <>
       <NavigationContainer>
-        <StatusBar style="auto" />
+        <StatusBar style="light" />
         <Stack.Navigator
           initialRouteName={isLoggedIn ? 'DrawerStack' : 'Giriş'}
           screenOptions={{
-            headerStyle: { backgroundColor: '#eee' },
-            headerTintColor: '#333',
-            contentStyle: { backgroundColor: '#eee' },
+            headerStyle: { backgroundColor: '#fff' },
+            headerTintColor: '#b8860b ',
+            contentStyle: { backgroundColor: '#fff' },
           }}
         >
           <Stack.Screen

@@ -8,6 +8,7 @@ import TableCell from "../components/UI/TableCell";
 import FixedButton from "../components/UI/FixedButton";
 import Input from "../components/UI/Input";
 import Button from "../components/UI/Button";
+import { GlobalStyles } from "../constants/styles";
 
 function ItemScreen({ }) {
     const [modalVisible, setModalVisible] = useState(false);
@@ -160,7 +161,7 @@ function ItemScreen({ }) {
                     <Button
                         text='Təsdiq et'
                         onPress={addItem}
-                        color='green'
+                        color={GlobalStyles.colors.green}
                     />
                 </View>
             </Modal>

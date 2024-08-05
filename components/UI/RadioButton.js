@@ -9,7 +9,7 @@ function RadioButton({ text, selected, onSelect }) {
             onPress={onSelect}
         >
             <Text style={[styles.text,
-            { color: selected ? 'white' : GlobalStyles.colors.primary700 }]}>{text}</Text>
+            { color: selected ? 'white' : GlobalStyles.colors.gold }]}>{text}</Text>
         </Pressable>
     )
 }
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     container: {
         padding: 10,
         margin: 10,
-        borderColor: GlobalStyles.colors.primary700,
+        borderColor: GlobalStyles.colors.gold,
         borderRadius: 10,
         borderWidth: 1,
         // elevation: 4,
@@ -29,12 +29,11 @@ const styles = StyleSheet.create({
         // shadowOpacity: 0.5,
         // shadowRadius: 4,
     },
-    text: {
-        color: GlobalStyles.colors.primary700,
+    text: {        
         textAlign: 'center',
         fontSize: 18,
     },
     press: {
-        backgroundColor: GlobalStyles.colors.primary700,
+        backgroundColor: GlobalStyles.colors.lightGreen,
     }
 });
