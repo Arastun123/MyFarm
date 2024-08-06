@@ -6,7 +6,7 @@ import { GlobalStyles } from "../constants/styles";
 import { getData } from "../util/http";
 import { formatDate } from "../util/date";
 
-function FlatListItem({ id, name, status, date, operationData, operation_type }) {
+function FlatListItem({ id, name, status, date, operationData, operation_type, target_table, data }) {
     const navigation = useNavigation();
 
     let title = 'Gözləmədə olan əməliyat';
@@ -14,9 +14,10 @@ function FlatListItem({ id, name, status, date, operationData, operation_type })
     let defaultValue = operationData;
     let pendingId = id;
     let operationType = operation_type;
+    let screen = target_table === 'animal' ? 'Redaktə' : 'Süd';
 
     function showSelecetedOperation(id) {
-        navigation.navigate('Redaktə', { id, defaultValue, title, mode, pendingId, operation_type });
+        navigation.navigate(screen, { id, defaultValue, title, mode, pendingId, operation_type, data });
     }
 
 
@@ -81,7 +82,9 @@ function PendingOperation({ navigation }) {
                                     status={item.status}
                                     date={item.created_at}
                                     operationData={parsedData}
-                                    operation_type={item.operation_type}                                    
+                                    operation_type={item.operation_type}
+                                    target_table={item.target_table}
+                                    data={item.data}
                                 />
                             );
                         }}
@@ -134,7 +137,7 @@ const styles = StyleSheet.create({
         height: 150,
         padding: 12,
         marginVertical: 8,
-        backgroundColor: GlobalStyles.colors.primary500,
+        backgroundColor: '#fff',
         flexDirection: 'row',
         justifyContent: 'space-between',
         borderRadius: 8,
@@ -145,7 +148,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.4,
     },
     textBase: {
-        color: GlobalStyles.colors.primary100,
+        color: GlobalStyles.colors.green,
         fontSize: 14,
     },
     press: { opacity: 0.75 },

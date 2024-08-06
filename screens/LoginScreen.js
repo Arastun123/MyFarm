@@ -13,8 +13,8 @@ function LoginScreen({ navigation }) {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [error, setError] = useState('');
     const [inputs, setInputs] = useState({
-        username: 'Erestun',
-        password: '1234',
+        username: '',
+        password: '',
     });
 
     function inputChangeHandler(inputIdentifier, enteredValue) {
@@ -116,13 +116,13 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 34,
         fontWeight: 'bold',
-        color: GlobalStyles.colors.primary800,
+        color: GlobalStyles.colors.green,
         textAlign: 'center',
         marginTop: '20%',
     },
     text: {
         fontSize: 16,
-        color: GlobalStyles.colors.primary800,
+        color: GlobalStyles.colors.gold,
         textAlign: 'center',
     },
     passwordContainer: {

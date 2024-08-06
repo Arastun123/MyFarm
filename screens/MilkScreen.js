@@ -28,7 +28,8 @@ const MilkReportItem = ({ id, date, amount, count }) => (
     </View>
 );
 
-function MilkScreen() {
+function MilkScreen({ route }) {
+    const { operation_type = '', pendingId = null, data = {} } = route.params || {};
     const today = getFormatedDate(new Date());
     const [modalVisible, setModalVisible] = useState(false);
     const [inputs, setInputs] = useState({
@@ -53,19 +54,17 @@ function MilkScreen() {
     const headers = ["N", "Tarix", "Miqdar"];
     let count = 0;
 
+    const parsedData = JSON.parse(data);
+
+
     useFocusEffect(
         useCallback(() => {
             getMilkReports();
             calculateTotalMilk();
-
         }, [])
     );
 
     useEffect(() => {
-        setInputs(prevInputs => ({
-            ...prevInputs,
-            date: today
-        }));
         const loadUserData = async () => {
             const role = await AsyncStorage.getItem('role');
             const token = await AsyncStorage.getItem('token');
@@ -74,6 +73,24 @@ function MilkScreen() {
             setUserData({ role, token, username, hide });
         };
         loadUserData();
+    }, []);
+
+    useEffect(() => {
+        if (Object.keys(parsedData).length !== 0) {
+            setModalVisible(true);
+            setInputs({
+                id: parsedData.id,
+                date: parsedData.date,
+                morning: parsedData.morning,
+                night: parsedData.night,
+                total: parsedData.total,
+                used_milk: parsedData.used_milk,
+                other_info: parsedData.other_info
+            });
+        }
+    }, []);
+
+    useEffect(() => {
         filterData();
         calculateTotalMilk();
     }, [filterDate, resData]);
@@ -84,7 +101,7 @@ function MilkScreen() {
             const data = await getData(url);
             setResData(data.reverse());
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error fetching milk reports:', error);
         }
     }
 
@@ -120,6 +137,7 @@ function MilkScreen() {
         let endpoint = `milk/add-milk`;
 
         const data = {
+            id: inputs.id,
             date: inputs.date,
             morning: inputs.morning,
             night: inputs.night,
@@ -129,14 +147,18 @@ function MilkScreen() {
             username: userData.username,
             role: userData.role,
         };
+
         let response = '';
         try {
             if (selectedRow === null) {
                 response = await addData(endpoint, data);
             }
-            else {
-                endpoint = `milk/update-milk`
-                response = await updateData(endpoint, selectedRow, data);
+
+            if (selectedRow !== null || operation_type === 'milk/update-milk') {
+                endpoint = `milk/update-milk`;
+                response = await updateData(endpoint, inputs.id, data);
+                url = 'pendingOperation/deleteOperation'
+                deleteData(url, pendingId, data);
             }
             if (response.status === 201) {
                 Alert.alert('', response.message);
@@ -149,6 +171,7 @@ function MilkScreen() {
 
     async function deleteMilkReport() {
         let url = 'milk/delete-milk';
+        let response = '';
         const data = {
             date: inputs.date,
             morning: inputs.morning,
@@ -158,25 +181,23 @@ function MilkScreen() {
             other_info: inputs.other_info,
             username: userData.username,
             role: userData.role,
-        }
+        };
 
         try {
-            let response = await deleteData(url, selectedRow, data);
-            if (response.status === 200) {
+            response = await deleteData(url, selectedRow, data);
+            if (operation_type === 'milk/milk-delete') {
+                url = 'pendingOperation/deleteOperation'
+                deleteData(url, pendingId, data);
+            }
+            if (response.status === 200 || response.status === 201) {
                 Alert.alert('', response.message);
                 getMilkReports();
                 modalVisibilty(false);
-            }
-            else if (response.status === 201) {
-                Alert.alert('', response.message);
-                getMilkReports();
-                modalVisibilty(false);
-            }
-            else {
+            } else {
                 Alert.alert('Xəta', response.message);
             }
         } catch (error) {
-
+            console.error('Error deleting milk report:', error);
         }
     }
 
@@ -185,13 +206,14 @@ function MilkScreen() {
         if (!status) {
             setInputs({
                 date: today,
-                morning: 0,
-                night: 0,
+                morning: '',
+                night: '',
                 total: '',
-                used_milk: 0,
+                used_milk: '',
                 other_info: ''
             });
         }
+        if (status === false) setSelectedRow(null);
     }
 
     function handleSelectedRow(id) {
@@ -200,6 +222,7 @@ function MilkScreen() {
             return;
         } else {
             setSelectedRow(id);
+            modalVisibilty(true);
             const data = resData.find(item => item.id === id);
             setInputs({
                 id: data.id,
@@ -232,17 +255,18 @@ function MilkScreen() {
 
     function resetState() {
         setInputs({
-            id: 0,
             date: today,
-            morning: 0,
-            night: 0,
+            morning: '',
+            night: '',
             total: '',
-            used_milk: 0,
+            used_milk: '',
             other_info: ''
         });
         setSelectedRow(null);
         getMilkReports();
         modalVisibilty(false);
+        operation_type = '';
+        pendingId = null;
     }
 
     return (
@@ -280,12 +304,12 @@ function MilkScreen() {
                             <MilkReportItem date={item.date} amount={item.total} id={item.id} count={++count} />
                         </Pressable>
                     )}
-                    keyExtractor={item => item.id.toString()}
+                    keyExtractor={item => item.id}
                     style={styles.flatList}
                 />
                 <FixedButton
                     onPress={() => modalVisibilty(true)}
-                    name={selectedRow === null ? 'add' : 'preview'}
+                    name={'add'}
                 />
             </View>
 
@@ -317,7 +341,7 @@ function MilkScreen() {
                                 keyboardType: 'numeric',
                                 maxLength: 10,
                                 onChangeText: text => inputChangeHandler('morning', text),
-                                value: inputs.morning.toString(),
+                                value: inputs.morning,
                             }}
                         />
                         <Input
@@ -327,7 +351,7 @@ function MilkScreen() {
                                 keyboardType: 'numeric',
                                 maxLength: 10,
                                 onChangeText: text => inputChangeHandler('night', text),
-                                value: inputs.night.toString(),
+                                value: inputs.night,
                             }}
                         />
                         <Input
@@ -336,7 +360,7 @@ function MilkScreen() {
                                 maxLength: 10,
                                 keyboardType: 'numeric',
                                 onChangeText: text => inputChangeHandler('used_milk', text),
-                                value: inputs.used_milk.toString(),
+                                value: inputs.used_milk,
                             }}
                         />
                         <Input
@@ -373,6 +397,31 @@ function MilkScreen() {
                             />
                         </>
                         : ''
+                    }
+                    {
+                        operation_type === 'milk/delete-milk' && (
+                            <>
+                                <Button
+                                    text='Təsdiq et'
+                                    onPress={deleteMilkReport}
+                                    color={GlobalStyles.colors.green}
+                                />
+                                <Button
+                                    text='Sil'
+                                    color='red'
+                                    onPress={deleteMilkReport}
+                                />
+                            </>
+                        )
+                    }
+                    {
+                        operation_type !== '' && (
+                            <Button
+                                text='Sil'
+                                color='red'
+                                onPress={deleteMilkReport}
+                            />
+                        )
                     }
                 </View>
             </Modal>
