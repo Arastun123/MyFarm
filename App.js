@@ -9,11 +9,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import MilkScreen from './screens/MilkScreen';
 import CowsScreen from './screens/CowsScreen';
-import FinanceScreen from './screens/FinanceScreen';
-import WarehouseScreen from './screens/WarehouseScreen';
 import ManageCow from './components/Cow/ManageCow';
 import HomeScreen from './screens/HomeScreen';
-import ItemScreen from './screens/ItemScreen';
 import LoginScreen from './screens/LoginScreen';
 import CategoryCowScreen from './screens/CategoryCowScreen';
 import Button from './components/UI/Button';
@@ -37,8 +34,8 @@ function DrawerNavigator() {
       screenOptions={{
         headerStyle: { backgroundColor: GlobalStyles.colors.green },
         headerTintColor: GlobalStyles.colors.gold,
-        sceneContainerStyle: { backgroundColor: '#eee' },
-        drawerContentStyle: { backgroundColor: '#eee' },
+        sceneContainerStyle: { backgroundColor: '#fff' },
+        drawerContentStyle: { backgroundColor: '#fff' },
         drawerInactiveTintColor: GlobalStyles.colors.gold,
         drawerActiveTintColor: GlobalStyles.colors.gold,
         drawerActiveBackgroundColor: GlobalStyles.colors.green,
@@ -75,23 +72,6 @@ function DrawerNavigator() {
       />
 
       <Drawer.Screen
-        name='Maliyə'
-        component={FinanceScreen}
-        options={{
-          title: 'Maliyə',
-          drawerIcon: ({ color, size }) => <MaterialCommunityIcons name='finance' size={size} color={color} />
-        }}
-      />
-
-      <Drawer.Screen
-        name='Anbar'
-        component={WarehouseScreen}
-        options={{
-          title: 'Anbar',
-          drawerIcon: ({ color, size }) => <FontAwesome6 name='warehouse' size={size} color={color} />
-        }}
-      />
-      <Drawer.Screen
         name='Gözləmə'
         component={PendingOperation}
         options={{
@@ -121,8 +101,8 @@ export default function App() {
         <Stack.Navigator
           initialRouteName={isLoggedIn ? 'DrawerStack' : 'Giriş'}
           screenOptions={{
-            headerStyle: { backgroundColor: '#fff' },
-            headerTintColor: '#b8860b ',
+            headerStyle: { backgroundColor: GlobalStyles.colors.green },
+            headerTintColor: GlobalStyles.colors.gold,
             contentStyle: { backgroundColor: '#fff' },
           }}
         >
@@ -139,11 +119,6 @@ export default function App() {
           <Stack.Screen
             name='Redaktə'
             component={ManageCow}
-          />
-          <Stack.Screen
-            name='Item'
-            component={ItemScreen}
-            options={({ route }) => ({ title: route.params?.name || 'Default Title' })}
           />
           <Stack.Screen
             name='Heyvan'

@@ -35,29 +35,7 @@ function HomeScreen({ }) {
                     <Text style={styles.cardTitle}>Süd</Text>
                 </Pressable>
             </View>
-            <View style={styles.row}>
-                <Pressable
-                    style={({ pressed }) => [
-                        styles.cardContainer,
-                        pressed && styles.press
-                    ]}
-                    onPress={() => changeScreen('Maliyə')}
-                >
-                    <MaterialCommunityIcons name='finance' size={30} color={GlobalStyles.colors.gold} />
-                    <Text style={styles.cardTitle}>Maliyə</Text>
-                </Pressable>
-                <Pressable
-                    style={({ pressed }) => [
-                        styles.cardContainer,
-                        pressed && styles.press
-                    ]}
-                    onPress={() => changeScreen('Anbar')}
-                >
-                    <FontAwesome6 name='warehouse' size={30} color={GlobalStyles.colors.gold} />
-                    <Text style={styles.cardTitle}>Anbar</Text>
-                </Pressable>
-            </View>
-            <View style={{ ...styles.row, justifyContent: 'center' }}>
+            <View style={{...styles.row, justifyContent: 'center'}}>
                 <Pressable
                     style={({ pressed }) => [
                         styles.cardContainer,

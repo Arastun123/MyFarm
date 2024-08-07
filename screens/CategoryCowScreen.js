@@ -160,32 +160,32 @@ const styles = StyleSheet.create({
         margin: 6,
         borderRadius: 6,
         borderWidth: 1,
-        borderColor: GlobalStyles.colors.primary200,
+        borderColor: GlobalStyles.colors.green,
     },
     text: {
         padding: 6,
-        color: GlobalStyles.colors.primary700,
+        color: GlobalStyles.colors.gold,
         fontSize: 16,
         textAlign: 'center',
         textTransform: 'uppercase',
     },
     buttonPressed: {
         opacity: .5,
-        backgroundColor: GlobalStyles.colors.primary700,
+        backgroundColor: GlobalStyles.colors.green,
         overflow: 'hidden',
     },
     title: {
-        color: GlobalStyles.colors.primary800,
+        color: GlobalStyles.colors.green,
         textAlign: 'center',
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 10,
     },
     activeCategory: {
-        backgroundColor: GlobalStyles.colors.primary800,
+        backgroundColor: GlobalStyles.colors.green,
     },
     activeCategoryText: {
-        color: '#fff'
+        color:  GlobalStyles.colors.lightGold,
     }
 
 });
