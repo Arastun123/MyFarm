@@ -13,10 +13,11 @@ import { GlobalStyles } from '../../constants/styles';
 import { useFocusEffect } from '@react-navigation/native';
 import { addData, deleteData, getData, updateData } from "../../util/http";
 
-function SoldMilk({ operation_type, pendingId, data }) {
+function SoldMilk({ operation_type, pendingId, data, total_milk }) {
     const today = getFormatedDate(new Date());
-    const [modalVisible, setModalVisible] = useState(false);
+    const [modalVisible, setModalVisible] = useState(operation_type ? true : false);
     const [inputs, setInputs] = useState({
+        id: null,
         date: today,
         sold_to: '',
         quantity: '',
@@ -28,14 +29,14 @@ function SoldMilk({ operation_type, pendingId, data }) {
     const [selectedRow, setSelectedRow] = useState(null);
     const [resData, setResData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
-    const [filteredTotal, setFilteredTotal] = useState(0);
+    const [filteredTotal, setFilteredTotal] = useState('');
     const [userData, setUserData] = useState({ role: '', token: '', username: '' });
     const [filterDate, setFilterDate] = useState({
         startDate: '',
         endDate: ''
     });
 
-    const headers = ["N", "Tarix", "Miqdar"];
+    const headers = ["Tarix", "Miqdar"];
     let count = 0;
 
     let parsedData = {};
@@ -47,12 +48,15 @@ function SoldMilk({ operation_type, pendingId, data }) {
         }
     }
 
+    console.log(parsedData.date.slice(0, 10));
+    console.log(parsedData);
+
     useFocusEffect(
         useCallback(() => {
             getMilkReports();
-            calculateTotalMilk();
         }, [])
     );
+
 
     useEffect(() => {
         const loadUserData = async () => {
@@ -65,20 +69,20 @@ function SoldMilk({ operation_type, pendingId, data }) {
         loadUserData();
     }, []);
 
-    useEffect(() => {
-        if (Object.keys(parsedData).length !== 0) {
-            setModalVisible(true);
-            setInputs({
-                id: parsedData.id,
-                date: parsedData.date,
-                sold_to: parsedData.sold_to,
-                quantity: parsedData.quantity,
-                total: parsedData.total,
-                price: parsedData.price,
-                other_info: parsedData.other_info
-            });
-        }
-    }, [parsedData]);
+    // useEffect(() => {
+    //     if (Object.keys(parsedData).length !== 0) {
+    //         setModalVisible(true);
+    //         setInputs({
+    //             id: parsedData.id,
+    //             date: parsedData.date,
+    //             sold_to: parsedData.sold_to,
+    //             quantity: parsedData.quantity,
+    //             total: parsedData.total,
+    //             price: parsedData.price,
+    //             other_info: parsedData.other_info
+    //         });
+    //     }
+    // }, [parsedData]);
 
     useEffect(() => {
         filterData();
@@ -228,7 +232,7 @@ function SoldMilk({ operation_type, pendingId, data }) {
         }
     }
 
-    const filterData = () => {
+    function filterData() {
         const { startDate, endDate } = filterDate;
         const filtered = resData.filter(item => {
             const itemDate = new Date(item.date);
@@ -239,7 +243,7 @@ function SoldMilk({ operation_type, pendingId, data }) {
         setFilteredData(filtered);
     };
 
-    const calculateTotalMilk = () => {
+    function calculateTotalMilk() {
         const total = filteredData.reduce((acc, item) => acc + parseInt(item.total, 10), 0);
         setFilteredTotal(total);
     };
@@ -259,10 +263,11 @@ function SoldMilk({ operation_type, pendingId, data }) {
         operation_type = '';
         pendingId = null;
     }
+
     return (
         <>
             <View style={styles.container}>
-                <View style={{...styles.radioButtonContainer, justifyContent: 'space-evenly'}}>
+                <View style={{ ...styles.radioButtonContainer, justifyContent: 'space-evenly' }}>
                     <Input
                         label="Başlanğıc Tarix"
                         textinputConfig={{
@@ -366,20 +371,26 @@ function SoldMilk({ operation_type, pendingId, data }) {
                     </View>
                 </ScrollView>
                 <View style={styles.radioButtonContainer}>
-                    <Button
-                        text='Təsdiq et'
-                        onPress={addMilkReport}
-                        color={GlobalStyles.colors.green}
-                    />
-                    {selectedRow !== null ?
-                        <>
-                            <Button
-                                text='Sil'
-                                color='red'
-                                onPress={deleteMilkReport}
-                            />
-                        </>
-                        : ''
+                    {
+                        operation_type !== 'soldMilk/delete-soldMilk' && (
+                            <>
+                                <Button
+                                    text='Təsdiq et'
+                                    onPress={addMilkReport}
+                                    color={GlobalStyles.colors.green}
+                                />
+                                {selectedRow !== null ?
+                                    <>
+                                        <Button
+                                            text='Sil'
+                                            color='red'
+                                            onPress={deleteMilkReport}
+                                        />
+                                    </>
+                                    : ''
+                                }
+                            </>
+                        )
                     }
                     {
                         operation_type === 'soldMilk/delete-soldMilk' && (
@@ -395,15 +406,6 @@ function SoldMilk({ operation_type, pendingId, data }) {
                                     onPress={deleteMilkReport}
                                 />
                             </>
-                        )
-                    }
-                    {
-                        operation_type !== '' && (
-                            <Button
-                                text='Sil'
-                                color='red'
-                                onPress={deleteMilkReport}
-                            />
                         )
                     }
                 </View>

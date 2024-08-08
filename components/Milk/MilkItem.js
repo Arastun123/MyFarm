@@ -4,9 +4,9 @@ import { getFormatedDate } from "../../util/date";
 function MilkItem({ date, amount, count}) {
     return (
         <View style={styles.row}>
-            <View style={styles.cell}>
+            {/* <View style={styles.cell}>
                 <Text style={styles.cellText}>{count}</Text>
-            </View>
+            </View> */}
             <View style={styles.cell}>
                 <Text style={styles.cellText}>{date.slice(0, 10)}</Text>
             </View>

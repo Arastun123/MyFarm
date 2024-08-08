@@ -13,10 +13,11 @@ function FlatListItem({ id, name, status, date, operationData, operation_type, t
     let mode = 'pending';
     let defaultValue = operationData;
     let pendingId = id;
-    let screen = target_table === 'animal' ? 'Redaktə' : 'Süd';    
+    let screen = target_table === 'animal' ? 'Redaktə' : 'Süd';
+    
 
     function showSelecetedOperation(id) {
-        navigation.navigate(screen, { id, defaultValue, title, mode, pendingId, operation_type, data });
+        navigation.navigate(screen, { id, defaultValue, title, mode, pendingId, operation_type, data, target_table });
     }
 
 

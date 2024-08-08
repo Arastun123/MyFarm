@@ -36,7 +36,6 @@ export async function addData(endPoint, data) {
 
 export async function updateData(endPoint, id, data) {
     let url = `${mainURL}${endPoint}/${id}`; 
-    console.log(url);
     
     try {
         const response = await axios.put(url, data);

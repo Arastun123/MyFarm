@@ -14,7 +14,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { addData, deleteData, getData, updateData } from "../../util/http";
 
 
-function Milk({ operation_type, pendingId, data }) {
+function Milk({ id, operation_type, pendingId, data }) {
 
     const today = getFormatedDate(new Date());
     const [modalVisible, setModalVisible] = useState(false);
@@ -30,7 +30,7 @@ function Milk({ operation_type, pendingId, data }) {
     const [selectedRow, setSelectedRow] = useState(null);
     const [resData, setResData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
-    const [filteredTotal, setFilteredTotal] = useState(0);
+    const [filteredTotal, setFilteredTotal] = useState('');
     const [userData, setUserData] = useState({ role: '', token: '', username: '' });
     const [filterDate, setFilterDate] = useState({
         startDate: '',
@@ -38,7 +38,7 @@ function Milk({ operation_type, pendingId, data }) {
     });
 
     let count = 0;
-    const headers = ["N", "Tarix", "Miqdar"];
+    const headers = ["Tarix", "Miqdar"];
 
     let parsedData = {};
     if (typeof data === 'string' && data.length !== 0) {
@@ -53,7 +53,7 @@ function Milk({ operation_type, pendingId, data }) {
             getMilkReports();
             calculateTotalMilk();
             count = 0;
-        }, [])
+        }, [filteredTotal])
     );
 
     useEffect(() => {
@@ -86,7 +86,8 @@ function Milk({ operation_type, pendingId, data }) {
     useEffect(() => {
         filterData();
         calculateTotalMilk();
-    }, [filterDate, resData]);
+    }, [filterDate, resData,]);
+
 
     async function getMilkReports() {
         const url = 'milk/milk';
@@ -230,7 +231,7 @@ function Milk({ operation_type, pendingId, data }) {
         }
     }
 
-    const filterData = () => {
+    function filterData() {
         const { startDate, endDate } = filterDate;
         const filtered = resData.filter(item => {
             const itemDate = new Date(item.date);
@@ -241,7 +242,7 @@ function Milk({ operation_type, pendingId, data }) {
         setFilteredData(filtered);
     };
 
-    const calculateTotalMilk = () => {
+    function calculateTotalMilk() {
         const total = filteredData.reduce((acc, item) => acc + parseInt(item.total, 10), 0);
         setFilteredTotal(total);
     };
@@ -293,7 +294,7 @@ function Milk({ operation_type, pendingId, data }) {
                             onPress={() => { handleSelectedRow(item.id) }}
                             style={[selectedRow === item.id && { backgroundColor: 'lightblue' }]}
                         >
-                            <MilkItem date={item.date} amount={item.total} count={++count}/>
+                            <MilkItem date={item.date} amount={item.total} count={++count} />
                         </Pressable>
                     )}
                     keyExtractor={item => item.id}
