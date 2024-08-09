@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 
 import RadioButton from '../components/UI/RadioButton';
@@ -10,10 +10,11 @@ import { GlobalStyles } from '../constants/styles';
 
 function MilkScreen({ route }) {
     const { operation_type = '', pendingId = null, data = {}, id = 0, target_table = null } = route.params || {};
-  
-    const [component, setCompnent] = useState(target_table ? target_table : 'milk');
+    
+    const [component, setComponent] = useState(target_table ? target_table : 'milk');
     const [resData, setResData] = useState([]);
     const [total_milk, setTotalMilk] = useState('');
+
 
     useFocusEffect(
         useCallback(() => {
@@ -21,13 +22,19 @@ function MilkScreen({ route }) {
         }, [])
     );
 
+    useEffect(() => {
+        if (resData.total_milk !== undefined) {
+            setTotalMilk(resData.total_milk);
+        }
+    }, [resData]);
+
     async function getMilkReports() {
         const url = 'residualMilk/residualMilk';
         try {
             const data = await getData(url);
-            setResData(data[0]);
-
-            setTotalMilk(resData.total_milk);
+            if (data && data.length > 0) {
+                setResData(data[0]);
+            }
         } catch (error) {
             console.error('Error fetching milk reports:', error);
         }
@@ -35,33 +42,30 @@ function MilkScreen({ route }) {
 
     return (
         <>
-            <View >
+            <View>
                 <View style={styles.radioButtonContainer}>
                     <RadioButton
                         text='Sağılmış süd'
                         selected={component === 'milk'}
-                        onSelect={() => {
-                            setCompnent('milk')
-                        }}
+                        onSelect={() => setComponent('milk')}
                     />
                     <RadioButton
                         text='Satılmış süd'
                         selected={component === 'sold_milk'}
-                        onSelect={() => {
-                            setCompnent('sold_milk')
-                        }}
+                        onSelect={() => setComponent('sold_milk')}
                     />
                 </View>
                 <Text style={styles.title}>Çəndə olan süd miqdarı: {total_milk}</Text>
             </View>
-            {
-                component === 'milk' ?
-                    <Milk operation_type={operation_type} pendingId={pendingId} data={data} id={id} /> :
-                    <SoldMilk operation_type={operation_type} pendingId={pendingId} data={data} total_milk={total_milk} id={id} />
-            }
+            {component === 'milk' ? (
+                <Milk operation_type={operation_type} pendingId={pendingId} data={data} id={id} />
+            ) : (
+                <SoldMilk operation_type={operation_type} pendingId={pendingId} data={data} total_milk={total_milk} id={id} />
+            )}
         </>
     );
 }
+
 
 const styles = StyleSheet.create({
     radioButtonContainer: {

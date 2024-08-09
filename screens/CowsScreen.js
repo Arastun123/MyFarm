@@ -144,7 +144,7 @@ function CowsScreen() {
                     <Text style={styles.title}>Gənc sayı: {younges.length}</Text>
                     <Text style={styles.title}>Toplam: {younges.length + calves.length + cows.length}</Text>
                 </View>
-                <Text style={styles.title}>Boğaz olan inəklər</Text>
+                <Text style={styles.title}>Boğaz olan inəklər: {pregnancies.length}</Text>
                 <View style={styles.flatContainer}>
                     <FlatList
                         data={pregnancies}

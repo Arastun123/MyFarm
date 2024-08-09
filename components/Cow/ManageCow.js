@@ -24,7 +24,7 @@ function ManageCow({ route }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [modalType, setModalType] = useState('');
 
-    const [selectedDateIndex, setSelectedDateIndex] = useState(null); //
+    const [selectedDateIndex, setSelectedDateIndex] = useState(null);
 
     const [inseminationData, setInseminationData] = useState([
         {
@@ -107,7 +107,7 @@ function ManageCow({ route }) {
             value: defaultValue ? defaultValue.selected_insemination_date : '',
             isValid: true
         }
-    });    
+    });
 
     useEffect(() => {
         if (defaultValue !== undefined) {
@@ -585,36 +585,30 @@ function ManageCow({ route }) {
                         )
                     }
                     <View style={styles.radioButtonContainer}>
-                        {mode === 'pending' && userData.role === 'master_admin' && route.params.operation_type == 'delete' &&
-                            (
-                                <>
-                                    <Button
-                                        text='Təsdiq et'
-                                        color='green'
-                                        onPress={() => deleteAnimal(id, `${animalCategory}/delete-${animalCategory}`)}
-                                    />
-                                    <Button
-                                        text='Ləğv et'
-                                        color='red'
-                                        onPress={() => deleteAnimal(id, 'pendingOperation/deleteOperation')}
-                                    />
-                                </>
-                            )
-                        }
-
-                        {
-                            id === undefined &&
-                            (
+                        {id === undefined && (
+                            <Button
+                                text='Təsdiq et'
+                                color='green'
+                                onPress={submitAnimal}
+                            />
+                        )}
+                        {pendingId !== undefined && userData.role === 'master_admin' && (
+                            <>
                                 <Button
                                     text='Təsdiq et'
                                     color='green'
-                                    onPress={submitAnimal}
+                                    onPress={() => deleteAnimal(id, `${animalCategory}/delete-${animalCategory}`)}
                                 />
-                            )
-                        }
+                                <Button
+                                    text='Ləğv et'
+                                    color='red'
+                                    onPress={() => deleteAnimal(id, 'pendingOperation/deleteOperation')}
+                                />
+                            </>
+                        )}
 
                         {
-                            mode !== 'add' && mode !== 'edit' && userData.role === 'master_admin' &&
+                            pendingId === undefined &&
                             (
                                 <>
                                     <Button
@@ -623,50 +617,9 @@ function ManageCow({ route }) {
                                         onPress={submitDeadOrSold}
                                     />
                                     <Button
-                                        text='Ləğv et'
-                                        color='red'
-                                        onPress={() => deleteAnimal(id, 'pendingOperation/deleteOperation')}
-                                    />
-                                </>
-                            )
-                        }
-
-                        {
-                            mode === 'edit' &&
-                            (
-                                <>
-                                    <Button
-                                        text='Təsdiq et'
-                                        color='green'
-                                        onPress={submitAnimal}
-                                    />
-                                    <Button
                                         text='Sil'
                                         color='red'
-                                        onPress={() => deleteAnimal(id, `${animalCategory}/delete-${animalCategory}`)}
-                                    />
-                                    {showDropdown && (
-                                        <View style={styles.dropdonwBox}>
-                                            <Dropdown
-                                                text='Sat'
-                                                id={id}
-                                                tableName='sold'
-                                                status='satılıb'
-                                                onSelect={() => modalVisibilty(true, 'sold')}
-                                            />
-                                            <Dropdown
-                                                text='Tələf olub'
-                                                id={id}
-                                                tableName='dead'
-                                                status='tələf olub'
-                                                onSelect={() => modalVisibilty(true, 'dead')}
-                                            />
-                                        </View>
-                                    )}
-                                    <Button
-                                        text={<FontAwesome name="exchange" size={24} color="white" />}
-                                        color={showDropdown ? GlobalStyles.colors.primary800 : 'green'}
-                                        onPress={() => { setShowDropdown(!showDropdown) }}
+                                        onPress={() => deleteAnimal(id, 'pendingOperation/deleteOperation')}
                                     />
                                 </>
                             )
@@ -758,12 +711,12 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginTop: 10,
         fontWeight: 'bold',
-        color: GlobalStyles.colors.primary800,
+        color: GlobalStyles.colors.green,
         textAlign: 'center',
     },
     label: {
         fontSize: 16,
-        color: GlobalStyles.colors.primary500,
+        color: GlobalStyles.colors.lightGreen,
         marginBottom: 4
     },
     radioButtonContainer: {
@@ -777,6 +730,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         position: 'absolute',
         top: -47,
-        backgroundColor: GlobalStyles.colors.primary800,
+        backgroundColor: GlobalStyles.colors.green,
     }
 })

@@ -9,17 +9,21 @@ import { formatDate } from "../util/date";
 function FlatListItem({ id, name, status, date, operationData, operation_type, target_table, data }) {
     const navigation = useNavigation();
 
+    let screen;
+    if (target_table === 'milk' || target_table === 'sold_milk') {
+        screen = 'Süd Redaktə';
+    } else {
+        screen = 'Redaktə';
+    }
+
     let title = 'Gözləmədə olan əməliyat';
     let mode = 'pending';
     let defaultValue = operationData;
     let pendingId = id;
-    let screen = target_table === 'animal' ? 'Redaktə' : 'Süd';
-    
 
     function showSelecetedOperation(id) {
         navigation.navigate(screen, { id, defaultValue, title, mode, pendingId, operation_type, data, target_table });
     }
-
 
     return (
         <Pressable
@@ -37,7 +41,7 @@ function FlatListItem({ id, name, status, date, operationData, operation_type, t
     );
 }
 
-function PendingOperation({ navigation }) {
+function PendingOperation() {
     const [resData, setResData] = useState([]);
 
     useFocusEffect(
@@ -50,7 +54,7 @@ function PendingOperation({ navigation }) {
         let endpoint = 'pendingOperation/getOperation';
         try {
             const data = await getData(endpoint);
-            setResData(data.reverse());
+            setResData(data.reverse()); 
         } catch (error) {
             console.error('Error', error);
         }
@@ -96,6 +100,7 @@ function PendingOperation({ navigation }) {
         </View>
     );
 }
+
 
 
 export default PendingOperation;
@@ -153,10 +158,10 @@ const styles = StyleSheet.create({
     },
     press: { opacity: 0.75 },
     title: {
-        color: GlobalStyles.colors.primary800,
+        color: GlobalStyles.colors.green,
         textAlign: 'center',
         fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 10,
+        marginTop: 50,
     }
 });

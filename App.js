@@ -16,6 +16,7 @@ import CategoryCowScreen from './screens/CategoryCowScreen';
 import Button from './components/UI/Button';
 import PendingOperation from './screens/PendingOperation';
 import { GlobalStyles } from './constants/styles';
+import ManageMilk from './components/Milk/ManageMilk';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -99,7 +100,7 @@ export default function App() {
       <NavigationContainer>
         <StatusBar style="light" />
         <Stack.Navigator
-          initialRouteName={isLoggedIn ? 'DrawerStack' : 'Giriş'}
+          initialRouteName={isLoggedIn ? 'Naviqasiya' : 'Giriş'}
           screenOptions={{
             headerStyle: { backgroundColor: GlobalStyles.colors.green },
             headerTintColor: GlobalStyles.colors.gold,
@@ -112,7 +113,7 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name='DrawerStack'
+            name='Naviqasiya'
             component={DrawerNavigator}
             options={{ headerShown: false }}
           />
@@ -128,6 +129,10 @@ export default function App() {
           <Stack.Screen
             name='Gözləmə'
             component={PendingOperation}
+          />
+          <Stack.Screen
+            name='Süd Redaktə'
+            component={ManageMilk}
           />
         </Stack.Navigator>
       </NavigationContainer>
