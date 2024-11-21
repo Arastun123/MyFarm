@@ -45,7 +45,7 @@ function SoldMilk() {
             const data = await getData(url);
             setResData(data.reverse());
         } catch (error) {
-            console.error('Error fetching milk reports:', error);
+            Alert.alert('Məlumatı əlavə edərkən xəta baş verdi:', error);
         }
     }
 

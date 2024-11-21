@@ -15,11 +15,6 @@ function FlatListItem({ id, bilka_number, selected_insemination_date, left_day, 
     let title = 'Gözləmədə olan əməliyat';
     let mode = 'pending';
 
-    function showSelecetedOperation(id) {
-        navigation.navigate('Redaktə', { id, defaultValue, title, mode, pendingId, operation_type });
-    }
-
-
     return (
         <Pressable>
             <View style={styles.item}>
@@ -88,7 +83,7 @@ function CowsScreen() {
             const data = await getData(url);
             return data;
         } catch (error) {
-            console.error('Error fetching data for', name, ':', error);
+            Alert.alert('Məlumatı əlavə edərkən xəta baş verdi:', error);
             return [];
         }
     }

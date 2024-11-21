@@ -1,12 +1,9 @@
 import { StyleSheet, View, Text } from "react-native";
 import { getFormatedDate } from "../../util/date";
 
-function MilkItem({ date, amount, count}) {
+function MilkItem({ date, amount, count }) {
     return (
         <View style={styles.row}>
-            {/* <View style={styles.cell}>
-                <Text style={styles.cellText}>{count}</Text>
-            </View> */}
             <View style={styles.cell}>
                 <Text style={styles.cellText}>{date.slice(0, 10)}</Text>
             </View>

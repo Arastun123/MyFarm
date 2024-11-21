@@ -36,7 +36,7 @@ function MilkScreen({ route }) {
                 setResData(data[0]);
             }
         } catch (error) {
-            console.error('Error fetching milk reports:', error);
+            Alert.alert('Məlumatı əldə edərkən xəta baş verdi:', error);
         }
     }
 

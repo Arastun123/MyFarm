@@ -33,7 +33,6 @@ function FlatListItem({ id, name, status, date, operationData, operation_type, t
             <View style={styles.item}>
                 <View>
                     <Text style={styles.textBase}>{name}</Text>
-                    <Text style={styles.textBase}>{status}</Text>
                     <Text style={styles.textBase}>{formatDate(date)}</Text>
                 </View>
             </View>

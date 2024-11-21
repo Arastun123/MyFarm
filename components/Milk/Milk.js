@@ -25,14 +25,14 @@ function Milk() {
     let count = 0;
     const headers = ["Tarix", "Miqdar"];
 
-    let target_table = 'milk'
+    let target_table = 'milk';
 
     useFocusEffect(
         useCallback(() => {
             getMilkReports();
             calculateTotalMilk();
             count = 0;
-        }, [filteredTotal])
+        }, [filteredTotal, resData])
     );
 
     useEffect(() => {
@@ -47,7 +47,7 @@ function Milk() {
             const data = await getData(url);
             setResData(data.reverse());
         } catch (error) {
-            console.error('Error fetching milk reports:', error);
+            Alert.alert('Məlumatı əldə edərkən xəta baş verdi:', error);
         }
     }
 
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     flatList: {
-        // flex: 1,
+        flex: 1,
         backgroundColor: '#fff',
     },
 

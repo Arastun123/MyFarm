@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { FontAwesome, AntDesign, Ionicons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import Input from "../UI/Input";
 import Button from "../UI/Button";
-import Dropdown from "../UI/Dropdown";
 import RadioButton from "../UI/RadioButton";
 import CustomCheckbox from "../UI/CustomCheckbox";
 import { GlobalStyles } from "../../constants/styles";
@@ -36,76 +35,58 @@ function ManageCow({ route }) {
 
     const [inputs, setInputs] = useState({
         id: {
-            value: defaultValue ? defaultValue.id : 0,
-            isValid: true
+            value: defaultValue ? defaultValue.id : 0
         },
         bilka_number: {
-            value: defaultValue ? defaultValue.bilka_number : 0,
-            isValid: true
+            value: defaultValue ? defaultValue.bilka_number : 0
         },
         name: {
             value: defaultValue ? defaultValue.name : '',
-            isValid: true
         },
         weight: {
             value: defaultValue ? defaultValue.weight : 0,
-            isValid: true
         },
         date: {
             value: defaultValue ? defaultValue.date : '',
-            isValid: true
         },
         birthdate: {
             value: defaultValue ? defaultValue.birthdate : '',
-            isValid: true
         },
         other_info: {
             value: defaultValue ? defaultValue.other_info : '',
-            isValid: true
         },
         mother_bilka: {
             value: defaultValue ? defaultValue.mother_bilka : '',
-            isValid: true
         },
         getFrom: {
             value: defaultValue ? defaultValue.getFrom : '',
-            isValid: true
         },
         child_count: {
             value: defaultValue ? defaultValue.child_count : 0,
-            isValid: true
         },
         last_checkup_date: {
             value: defaultValue ? defaultValue.last_checkup_date : '',
-            isValid: true
         },
         categories: {
             value: defaultValue ? defaultValue.categories : '',
-            isValid: true
         },
         sold_price: {
             value: defaultValue ? defaultValue.sold_price : 0,
-            isValid: true
         },
         sold_to: {
             value: defaultValue ? defaultValue.sold_to : '',
-            isValid: true
         },
         info: {
             value: defaultValue ? defaultValue.info : '',
-            isValid: true
         },
         dead_reason: {
             value: defaultValue ? defaultValue.dead_reason : '',
-            isValid: true
         },
         mode: {
             value: defaultValue ? defaultValue.mode : '',
-            isValid: true
         },
         selected_insemination_date: {
             value: defaultValue ? defaultValue.selected_insemination_date : '',
-            isValid: true
         }
     });
 
@@ -139,12 +120,12 @@ function ManageCow({ route }) {
         setInputs((curInputValues) => {
             return {
                 ...curInputValues,
-                [inputIdentifier]: { value: enteredValue, isValid: true },
+                [inputIdentifier]: { value: enteredValue, },
             }
         })
     };
 
-    async function submitDeadOrSold(id, tableName, status) {
+    async function submitDeadOrSold() {
         let endPoint = `${modalType}Animal/addAnimal`;
         let data = {};
         let response = '';
@@ -189,8 +170,7 @@ function ManageCow({ route }) {
                 Alert.alert('Xəta', 'Zəhmət olmasa məlumatları daxil edin!');
             }
         } catch (error) {
-            console.error('Error submitting cow data:', error);
-            Alert.alert('Xəta', 'error');
+            Alert.alert('Xəta', error);
         }
     };
 
@@ -248,8 +228,7 @@ function ManageCow({ route }) {
                 Alert.alert('Xəta', 'Zəhmət olmasa məlumatları daxil edin!');
             }
         } catch (error) {
-            console.error('Error submitting cow data:', error);
-            Alert.alert('Xəta', 'error');
+            Alert.alert('Məlumatı əlavə edərkən xəta baş verdi:', error);
         }
     };
 
@@ -257,6 +236,7 @@ function ManageCow({ route }) {
         let endPoint = status !== '' ? status : `${animalCategory}/delete-${animalCategory}`;
         let role = userData.role;
         const data = {
+            id: inputs.id.value,
             bilka_number: inputs.bilka_number.value,
             name: inputs.name.value,
             weight: inputs.weight.value,
@@ -275,7 +255,7 @@ function ManageCow({ route }) {
         };
 
         try {
-            let response = await deleteData(endPoint, id, data);
+            let response = await deleteData(endPoint, data.id, data);
             if (mode === 'delete') {
                 endPoint = 'pendingOperation/deleteOperation'
                 await deleteData(endPoint, pendingId, data);
@@ -290,9 +270,11 @@ function ManageCow({ route }) {
             } else {
                 Alert.alert('Xəta', response.message);
             }
+            console.log(response);
+
         } catch (error) {
-            console.error('Error deleting cow:', error);
-            Alert.alert('Xəta', 'An error occurred while deleting the cow.');
+            Alert.alert('Məlumatı silərkən xəta baş verdi:', error);
+
         }
     }
 
@@ -324,13 +306,13 @@ function ManageCow({ route }) {
             if (prevIndex === index) {
                 setInputs((prevInputs) => ({
                     ...prevInputs,
-                    selected_insemination_date: { value: '', isValid: true }
+                    selected_insemination_date: { value: '', }
                 }));
                 return null;
             }
             setInputs((prevInputs) => ({
                 ...prevInputs,
-                selected_insemination_date: { value: selectedInseminationDate, isValid: true }
+                selected_insemination_date: { value: selectedInseminationDate, }
             }));
             return index;
         });
@@ -608,19 +590,43 @@ function ManageCow({ route }) {
                         )}
 
                         {
-                            pendingId === undefined &&
+                            id !== undefined && pendingId === undefined &&
                             (
                                 <>
                                     <Button
                                         text='Təsdiq et'
                                         color='green'
-                                        onPress={submitDeadOrSold}
+                                        onPress={submitAnimal}
                                     />
                                     <Button
                                         text='Sil'
                                         color='red'
                                         onPress={() => deleteAnimal(id, 'pendingOperation/deleteOperation')}
                                     />
+                                    <Button
+                                        text={<FontAwesome name="exchange" size={24} color="white" />}
+                                        color={showDropdown ? GlobalStyles.colors.primary800 : 'green'}
+                                        onPress={() => { setShowDropdown(!showDropdown) }}
+                                    />
+
+                                    {showDropdown && (
+                                        <View style={styles.dropdonwBox}>
+                                            <Dropdown
+                                                text='Sat'
+                                                id={id}
+                                                tableName='sold'
+                                                status='satılıb'
+                                                onSelect={() => modalVisibilty(true, 'sold')}
+                                            />
+                                            <Dropdown
+                                                text='Tələf olub'
+                                                id={id}
+                                                tableName='dead'
+                                                status='tələf olub'
+                                                onSelect={() => modalVisibilty(true, 'dead')}
+                                            />
+                                        </View>
+                                    )}
                                 </>
                             )
                         }
